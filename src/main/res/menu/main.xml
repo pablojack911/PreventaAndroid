@@ -1,0 +1,15 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="inteldev.android.presentation.MainActivity" >
+    
+    <item android:id="@+id/MenuOpcionLogin"
+        android:title="Login"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+
+    <item android:id="@+id/MenuOpcionRecibir"
+        android:title="Recibir"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+</menu>

@@ -1,0 +1,55 @@
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <inteldev.android.presentation.ControlSpinnerDia
+        android:id="@+id/CtlSpinnerDia"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+
+    <RadioGroup
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/rgVisitados"
+        android:focusableInTouchMode="false">
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_visitados"
+            android:id="@+id/rbNoVisitados" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/visitados"
+            android:id="@+id/rbVisitados" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/todos"
+            android:id="@+id/rbTodos" />
+    </RadioGroup>
+
+    <ListView
+        android:id="@+id/lvClientes"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:alwaysDrawnWithCache="false"
+        android:divider="@android:color/black"
+        android:dividerHeight="2dp"
+        android:drawSelectorOnTop="true"
+        android:duplicateParentState="false"
+        android:fastScrollEnabled="true"
+        android:footerDividersEnabled="false"
+        android:headerDividersEnabled="true"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:scrollbarStyle="outsideOverlay"/>
+
+</LinearLayout>

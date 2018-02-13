@@ -1,0 +1,24 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="inteldev.android.presentation.RutaDeVenta" >
+
+    <item android:id="@+id/Ordenarlista" android:title="Ordenar lista"
+        android:icon="@android:drawable/ic_menu_agenda">
+        <menu>
+            <group android:id="@+id/grupo1">
+
+                <item android:id="@+id/OrdenarlistaPorNombre"
+                    android:title="Nombre" />
+                <item android:id="@+id/OrdenarListaPorDomicilio"
+                    android:title="Domicilio" />
+                <item android:id="@+id/OrdenarListaPorCuit"
+                    android:title="Cuit" />
+                <item android:id="@+id/OrdenarListaPorCodigo"
+                    android:title="Codigo" />
+                <item android:id="@+id/OrdenarListaPorRecorrido"
+                    android:title="Recorrido" />
+            </group>
+        </menu>
+    </item>
+</menu>

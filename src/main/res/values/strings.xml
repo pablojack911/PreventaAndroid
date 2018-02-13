@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Preventa Android</string>
+    <string name="app_version">1.11</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Opciones</string>
+    <string name="title_activity_login">Login</string>
+    <string name="title_activity_ruta_de_venta">Ruta De Venta</string>
+    <string name="title_activity_lista_clientes_ruta_de_venta">Lista de clientes de ruta de venta</string>
+    <string name="title_activity_pedidos">Pedidos</string>
+    <string name="title_activity_lista_pedido">Lista de pedidos</string>
+    <string name="title_activity_recibir">Recibir</string>
+    <string name="title_activity_convenio">Convenios</string>
+
+    <string-array name="motivoconvenio">
+        <item>Exclusividad</item>
+        <item>Exhibicion</item>
+        <item>Introduccion</item>
+        <item>Negociacion</item>
+        <item>Otro</item>
+        <item>Promocion</item>
+        <item>Volumen</item>
+    </string-array>
+    <string-array name="tipoparteoferta">
+        <item>BASE</item>
+        <item>BONIFICADA</item>
+    </string-array>
+
+    <string name="title_activity_of">Of</string>
+    <string name="title_activity_lista_ofertas">lista_ofertas</string>
+    <string name="title_activity_lista_oferta">lista_oferta</string>
+    <string name="title_activity_ofertas">Ofertas</string>
+    <string name="title_activity_articulos_oferta">Articulos Oferta</string>
+    <string name="title_activity_detalle_oferta">Detalle de ofertas</string>
+    <string name="title_activity_dialogo_cantidad">Cantidad</string>
+    <string name="title_activity_activity_lista_motivos_no_compra">
+        activity_lista_motivos_no_compra
+    </string>
+    <string name="no_visitados">No Visitados</string>
+    <string name="visitados">Visitados</string>
+    <string name="todos">Todos</string>
+    <string name="enviar_datos">Enviar Datos</string>
+    <string name="ventas">Ventas</string>
+    <string name="plus">+</string>
+    <string name="minus">-</string>
+    <string name="zero">0</string>
+    <string name="cantidad">Cantidad</string>
+    <string name="cerrado">Cerrado</string>
+    <string name="descuento_porcentaje">Dt%</string>
+    <string name="final_pesos">Final</string>
+    <string name="no_estaba_el_responsable">No estaba el responsable</string>
+    <string name="no_tiene_dinero">No tiene dinero</string>
+    <string name="ok">OK</string>
+    <string name="tiene_stock">Tiene Stock</string>
+    <string name="total_pesos">Total: $</string>
+    <string name="unit_precio">Unit.</string>
+    <string name="cantidad_corto">Cant.</string>
+    <string name="recibir_datos">Recibir Datos</string>
+    <string name="descuento">Descuento</string>
+    <string name="codigo">Código</string>
+    <string name="codigo_art">Código art.</string>
+    <string name="oferOperNoConfirmada">Editar oferta</string>
+    <string name="volver">Volver</string>
+    <string name="continuar">Continuar</string>
+    <string name="confirmar">Confirmar</string>
+    <string name="view_pager">View Pager</string>
+    <string name="dtos_convs">Descuentos/Convenios</string>
+    <string name="tomar_foto_a_cliente">Tomar foto a Cliente</string>
+    <string name="vencimiento">Vencimiento</string>
+    <string name="sin_cargo">Sin cargo</string>
+    <string name="versi_n">Versión:</string>
+
+</resources>

@@ -1,0 +1,74 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ListView
+        android:id="@+id/lvDetalle_Oferta_Pedidos"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/totalLayout"
+        android:footerDividersEnabled="true"
+        android:headerDividersEnabled="true"
+        android:padding="8dp"
+        android:scrollbarStyle="outsideOverlay"/>
+
+    <LinearLayout
+        android:id="@+id/totalLayout"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_above="@+id/footer"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingEnd="8dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingStart="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/edtTotalOfertaNoConfirmada"
+            android:text="@string/total_pesos"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"/>
+
+        <EditText
+            android:id="@+id/edtTotalOfertaNoConfirmada"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:width="100dp"
+            android:focusable="false"
+            android:inputType="number"
+            android:textAlignment="viewEnd"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+            android:textIsSelectable="false"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:orientation="horizontal"
+        android:weightSum="100">
+
+        <Button
+            android:id="@+id/btnVolver"
+            style="@android:style/Widget.Material.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="50"
+            android:text="@string/volver"/>
+
+        <Button
+            android:id="@+id/btnConfirmarOferta"
+            style="@android:style/Widget.Material.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="50"
+            android:text="@string/confirmar"/>
+    </LinearLayout>
+
+</RelativeLayout>

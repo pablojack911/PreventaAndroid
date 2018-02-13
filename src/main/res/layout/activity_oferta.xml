@@ -1,0 +1,228 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/tabCargaOferta"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+    <!--BASE / BONIFICADA -->
+    <Spinner
+        android:id="@+id/spTipoParteOferta"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/tipoparteoferta"
+        android:padding="@dimen/list_top_padding"/>
+    <!--ARTICULO-->
+    <Spinner
+        android:id="@+id/spArticuloDeLaOferta"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/list_top_padding"/>
+    <!--BUSCADOR ARTICULO-->
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:weightSum="100">
+
+        <EditText
+            android:id="@+id/edtCodigoArticuloOferta"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="70"
+            android:focusable="false"
+            android:inputType="number"
+            android:paddingLeft="@dimen/list_horizontal_padding"
+            android:paddingRight="@dimen/list_horizontal_padding"
+            android:paddingTop="@dimen/list_top_padding"
+            tools:ignore="LabelFor"/>
+
+        <EditText
+            android:id="@+id/edtArticuloOferta"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="30"
+            android:hint="@string/codigo_art"
+            android:inputType="number"
+            android:selectAllOnFocus="true"/>
+    </LinearLayout>
+    <!--CANTIDAD / PRECIO / DTO / AGREGAR-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:orientation="horizontal"
+        android:weightSum="100">
+        <!--CANTIDAD-->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="30"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/edtCantidadOferta"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:hint="@string/cantidad"
+                android:inputType="number"
+                android:selectAllOnFocus="true"
+                android:textAlignment="center"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnMenosOferta"
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/minus"/>
+
+                <Button
+                    android:id="@+id/btnMasOferta"
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/plus"/>
+            </LinearLayout>
+        </LinearLayout>
+        <!--DTO / PRECIO-->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="50"
+            android:orientation="vertical"
+            android:padding="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="100">
+
+                <TextView
+                    android:id="@+id/tvUnitarioOferta"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="25"
+                    android:labelFor="@+id/edtUnitarioOferta"
+                    android:text="@string/unit_precio"
+                    android:textAllCaps="false"/>
+
+                <EditText
+                    android:id="@+id/edtUnitarioOferta"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="75"
+                    android:focusable="false"
+                    android:inputType="text"
+                    android:textAlignment="textEnd"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="100">
+
+                <TextView
+                    android:id="@+id/tvDescuento"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="25"
+                    android:labelFor="@+id/edtDescuentoOferta"
+                    android:text="@string/descuento_porcentaje"/>
+
+                <EditText
+                    android:id="@+id/edtDescuentoOferta"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="75"
+                    android:focusable="false"
+                    android:inputType="number"
+                    android:textAlignment="textEnd"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="100">
+
+                <TextView
+                    android:id="@+id/tvFinalOferta"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="25"
+                    android:labelFor="@+id/edtFinalOferta"
+                    android:text="@string/final_pesos"/>
+
+                <EditText
+                    android:id="@+id/edtFinalOferta"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="75"
+                    android:focusable="false"
+                    android:inputType="number"
+                    android:textAlignment="textEnd"/>
+            </LinearLayout>
+
+        </LinearLayout>
+        <!--AGREGAR-->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="20"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/btnOkOferta"
+                android:layout_width="50dip"
+                android:layout_height="50dip"
+                android:background="@android:drawable/ic_input_add"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        android:padding="@dimen/list_top_padding">
+
+        <TextView
+            android:id="@+id/tvTotalOferta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/edtTotalOferta"
+            android:text="@string/total_pesos"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        <EditText
+            android:id="@+id/edtTotalOferta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:width="100dp"
+            android:background="@android:color/holo_orange_dark"
+            android:focusable="false"
+            android:inputType="number"
+            android:textAlignment="textEnd"
+            android:textIsSelectable="false"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnContinuarOferta"
+        style="@android:style/Widget.Material.Button"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="16dp"
+        android:layout_weight="1"
+        android:text="@string/continuar"/>
+</LinearLayout>
