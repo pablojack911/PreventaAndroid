@@ -122,6 +122,8 @@ class DatabaseHelper extends SQLiteOpenHelper
         sqLiteDatabase.execSQL(createTables.IndicePosicionesGPSEnviado);
         sqLiteDatabase.execSQL(createTables.IndicePosicionesGPS_fecha);
         sqLiteDatabase.execSQL(createTables.IndicePosicionesGPS_usuario);
+        sqLiteDatabase.execSQL(createTables.TablaBarras);
+        sqLiteDatabase.execSQL(createTables.IndiceBarras_barcode);
     }
 
     @Override

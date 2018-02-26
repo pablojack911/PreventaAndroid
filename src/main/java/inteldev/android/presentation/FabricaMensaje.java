@@ -40,7 +40,7 @@ public class FabricaMensaje extends DialogFragment
                 dialogoAlertaSiNo.Negativo();
             }
         });
-
+        alertDialog.setCancelable(false);
         return alertDialog;
     }
 
@@ -57,7 +57,7 @@ public class FabricaMensaje extends DialogFragment
                 dialogoAlerta.Neutral();
             }
         }));
-
+        alertDialog.setCancelable(false);
         return alertDialog;
     }
 
@@ -77,21 +77,19 @@ public class FabricaMensaje extends DialogFragment
         final LayoutInflater inflater = activity.getLayoutInflater();
         dialogoCantidad.setView(inflater.inflate(R.layout.activity_dialogo_cantidad, null))
                 // Add action buttons
-                .setPositiveButton(android.R.string.yes,
-                        new DialogInterface.OnClickListener()
-                        {
-                            public void onClick(DialogInterface dialog, int id)
-                            {
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int id)
+                    {
 
-                                Dialog f = (Dialog) dialog;
-                                EditText inputTemp = (EditText) f.findViewById(R.id.edtDialogoCantidad);
-                                String query = inputTemp.getText().toString();
+                        Dialog f = (Dialog) dialog;
+                        EditText inputTemp = (EditText) f.findViewById(R.id.edtDialogoCantidad);
+                        String query = inputTemp.getText().toString();
 
-                                listenerDialogoCantidad.Positivo(Integer.valueOf(query));
+                        listenerDialogoCantidad.Positivo(Integer.valueOf(query));
 
-                            }
-                        }
-                )
+                    }
+                })
 
                 .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener()
                 {

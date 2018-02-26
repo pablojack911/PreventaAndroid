@@ -1025,28 +1025,29 @@ public class Pedidos extends FragmentActivity
 
     private void edtArticulo(final Pedidos pedidos)
     {
-        final EditText edtArticulo = (EditText) findViewById(R.id.edtArticulo);
+        //NO SE BUSCA MAS DESDE onTextChanged
+//        final EditText edtArticulo = (EditText) findViewById(R.id.edtArticulo);
 
-        edtArticulo.addTextChangedListener(new TextWatcher()
-        {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3)
-            {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3)
-            {
-                buscarArticulo(pedidos, false);
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable)
-            {
-
-            }
-        });
+//        edtArticulo.addTextChangedListener(new TextWatcher()
+//        {
+//            @Override
+//            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3)
+//            {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3)
+//            {
+//                buscarArticulo(pedidos, false);
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable editable)
+//            {
+//
+//            }
+//        });
     }
 
     private void buscarArticulo(Context context, boolean desdeBtnBuscarArticulo)
@@ -1054,44 +1055,46 @@ public class Pedidos extends FragmentActivity
 
         String articulo = edtArticulo.getText().toString();
 
-        Dao controladorDb = new Dao(context);
+//        Dao controladorDb = new Dao(context);
+//
+//        String cadenaPorcentual = "%";
+//
+//        if (desdeBtnBuscarArticulo)
+//        {
+//            cadenaPorcentual = "";
+//        }
+//
+//        Cursor cursor = controladorDb.ejecutarConsultaSql("select idArticulo, idLinea, idRubro from articulos where idArticulo like '" + articulo + cadenaPorcentual + "'");
 
-        String cadenaPorcentual = "%";
-
-        if (desdeBtnBuscarArticulo)
+//        if (cursor.moveToFirst())
+//        {
+//            if (desdeBtnBuscarArticulo || cursor.getCount() == 1)
+//            {
+//
+        Articulo art = controladorArticulo.buscarArticulo(articulo);
+        if (art != null)
         {
-            cadenaPorcentual = "";
-        }
+            modoBuscadorArticulo = true;
 
-        Cursor cursor = controladorDb.ejecutarConsultaSql("select idArticulo," + "idLinea, idRubro from articulos" + " where idArticulo like '" + articulo + cadenaPorcentual + "'");
+            long idArticulo = controladorArticulo.buscarRowIdArticuloPorCodigo(art.idArticulo);
+            long idLinea = controladorArticulo.buscarRowIdLineaPorCodigo(art.idLinea);
+            long idRubro = controladorArticulo.buscarRowIdRubroPorRowId(art.idRubro);
 
-        if (cursor.moveToFirst())
-        {
-            if (desdeBtnBuscarArticulo || cursor.getCount() == 1)
-            {
+            spLinea.setSelection(getIndex(spLinea, idLinea));
+            idLineaSeleccionada = art.idLinea;
 
-                modoBuscadorArticulo = true;
+            spRubro(this);
 
-                long idArticulo = controladorArticulo.buscarRowIdArticuloPorCodigo(cursor.getString(0));
-                long idLinea = controladorArticulo.buscarRowIdLineaPorCodigo(cursor.getString(1));
-                long idRubro = controladorArticulo.buscarRowIdRubroPorRowId(cursor.getString(2));
+            spRubro.setSelection(getIndex(spRubro, idRubro));
+            idRubroSeleccionado = art.idRubro;
 
-                spLinea.setSelection(getIndex(spLinea, idLinea));
-                idLineaSeleccionada = cursor.getString(1);
+            spArticulo(this);
+            spArticulo.setSelection(getIndex(spArticulo, idArticulo));
+            idArticuloSeleccionado = art.idArticulo;
 
-                spRubro(this);
-
-                spRubro.setSelection(getIndex(spRubro, idRubro));
-                idRubroSeleccionado = cursor.getString(2);
-
-                spArticulo(this);
-                spArticulo.setSelection(getIndex(spArticulo, idArticulo));
-                idArticuloSeleccionado = cursor.getString(0);
-
-                edtCantidad.setText("1");
-                edtArticulo.setText("");
-                edtCantidad.requestFocus();
-            }
+            edtCantidad.setText("1");
+            edtArticulo.setText("");
+            edtCantidad.requestFocus();
         }
     }
 

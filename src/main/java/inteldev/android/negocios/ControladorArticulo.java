@@ -22,6 +22,16 @@ public class ControladorArticulo extends ControladorBaseNegocio
         super(dao);
     }
 
+    public Articulo buscarArticulo(String codigo)
+    {
+        Articulo articulo = buscarArticuloPorBarras(codigo);
+        if (articulo == null)
+        {
+            articulo = buscarArticuloPorCodigo(codigo);
+        }
+        return articulo;
+    }
+
     public Articulo buscarArticuloPorCodigo(String codigo)
     {
         Articulo articulo = null;
@@ -34,6 +44,20 @@ public class ControladorArticulo extends ControladorBaseNegocio
             articulo = articuloMapeador.cursorToEntity(cursor);
         }
 
+        return articulo;
+    }
+
+    public Articulo buscarArticuloPorBarras(String barra)
+    {
+        Articulo articulo = null;
+        //todo
+
+        Cursor cursor = dao.ejecutarConsultaSql("select idArticulo from barras where barcode='" + barra + "'");
+        if (cursor.moveToFirst())
+        {
+            String idarticulo = cursor.getString(0);
+            articulo = buscarArticuloPorCodigo(idarticulo);
+        }
         return articulo;
     }
 
@@ -131,17 +155,7 @@ public class ControladorArticulo extends ControladorBaseNegocio
     public ArrayList<ArticuloDescuento> obtenerDescuentos(String idClienteSeleccionado)
     {
         ArrayList<ArticuloDescuento> articuloDescuentos = new ArrayList<>();
-        String query = "select art.idarticulo, art.nombre, db.porcentaje, dl.precio*db.porcentaje/100, cb.fhasta, alcance.idcabbonif " +
-                "from detbonif db " +
-                "inner join cabbonif cb on cb.idcabbonif=db.idcabbonif " +
-                "inner join articulos art on (db.idlinea=art.idlinea and db.idrubro='' and db.idarticulo='') or (db.idarticulo=art.idarticulo and db.idlinea='' and db.idrubro='') or (db.idrubro=art.idrubro and db.idarticulo='' and db.idlinea='') " +
-                "inner join clientes c on c.idCliente=alcance.idCliente " +
-                "inner join detlistas dl on dl.articulo=art.idarticulo " +
-                "inner join alcance on alcance.idcabbonif=cb.idcabbonif " +
-                "where alcance.idcliente='" + idClienteSeleccionado + "' and " +
-                "dl.idlista=c.lista and " +
-                "date() between cb.fdesde and cb.fhasta " +
-                "order by art.idarticulo";
+        String query = "select art.idarticulo, art.nombre, db.porcentaje, dl.precio*db.porcentaje/100, cb.fhasta, alcance.idcabbonif " + "from detbonif db " + "inner join cabbonif cb on cb.idcabbonif=db.idcabbonif " + "inner join articulos art on (db.idlinea=art.idlinea and db.idrubro='' and db.idarticulo='') or (db.idarticulo=art.idarticulo and db.idlinea='' and db.idrubro='') or (db.idrubro=art.idrubro and db.idarticulo='' and db.idlinea='') " + "inner join clientes c on c.idCliente=alcance.idCliente " + "inner join detlistas dl on dl.articulo=art.idarticulo " + "inner join alcance on alcance.idcabbonif=cb.idcabbonif " + "where alcance.idcliente='" + idClienteSeleccionado + "' and " + "dl.idlista=c.lista and " + "date() between cb.fdesde and cb.fhasta " + "order by art.idarticulo";
         Cursor cursor = dao.ejecutarConsultaSql(query);
         while (cursor.moveToNext())
         {
@@ -162,14 +176,7 @@ public class ControladorArticulo extends ControladorBaseNegocio
     public ArrayList<ArticuloSinCargo> obtenerSinCargos(String idClienteSeleccionado)
     {
         ArrayList<ArticuloSinCargo> articuloSinCargos = new ArrayList<>();
-        String query = "select art.idarticulo, art.nombre, db.cant_sc, cb.fhasta, alcance.idcabbonif " +
-                "from detbonif db " +
-                "inner join cabbonif cb on cb.idcabbonif=db.idcabbonif " +
-                "inner join articulos art on db.idarticulo=art.idarticulo " +
-                "inner join alcance on alcance.idcabbonif=cb.idcabbonif " +
-                "where alcance.idcliente='" + idClienteSeleccionado + "' and " +
-                "db.cant_sc > 0 and " +
-                "date() between cb.fdesde and cb.fhasta";
+        String query = "select art.idarticulo, art.nombre, db.cant_sc, cb.fhasta, alcance.idcabbonif " + "from detbonif db " + "inner join cabbonif cb on cb.idcabbonif=db.idcabbonif " + "inner join articulos art on db.idarticulo=art.idarticulo " + "inner join alcance on alcance.idcabbonif=cb.idcabbonif " + "where alcance.idcliente='" + idClienteSeleccionado + "' and " + "db.cant_sc > 0 and " + "date() between cb.fdesde and cb.fhasta";
         Cursor cursor = dao.ejecutarConsultaSql(query);
         while (cursor.moveToNext())
         {

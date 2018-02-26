@@ -381,4 +381,13 @@ public class CreateTables
     public String IndicePosicionesGPSEnviado = "create index if not exists PosicionesGPS_enviado on PosicionesGPS (enviado asc)";
     public String IndicePosicionesGPS_fecha = "create index if not exists PosicionesGPS_fecha on PosicionesGPS (fecha asc)";
     public String IndicePosicionesGPS_usuario = "create index if not exists PosicionesGPS_usuario on PosicionesGPS (usuario asc)";
+
+    public String TablaBarras = "create table Barras " +
+            "(idArticulo text," +
+            "barcode text," +
+            "borrado int," +
+            "lastUpdate date)";
+
+    public String IndiceBarras_barcode = "create index if not exists Barras_barcode on Barras (barcode asc)";
+
 }
