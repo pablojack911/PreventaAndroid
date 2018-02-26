@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 import inteldev.android.accesoadatos.Dao;
 import inteldev.android.negocios.MapeadoresXml.TablaXmlAlcance;
 import inteldev.android.negocios.MapeadoresXml.TablaXmlArticulo;
+import inteldev.android.negocios.MapeadoresXml.TablaXmlBarras;
 import inteldev.android.negocios.MapeadoresXml.TablaXmlCabBonif;
 import inteldev.android.negocios.MapeadoresXml.TablaXmlCabLista;
 import inteldev.android.negocios.MapeadoresXml.TablaXmlCliente;
@@ -94,6 +95,7 @@ public class IncorporaXml
             TablaXmlDetBonif tablaXmlDetBonif = new TablaXmlDetBonif();
             TablaXmlAlcance tablaXmlAlcance = new TablaXmlAlcance();
             TablaXmlStock tablaXmlStock = new TablaXmlStock();
+            TablaXmlBarras tablaXmlBarras = new TablaXmlBarras();
 
             xmlReaderMobile.tablas.add(tablaXmlArticulo);
             xmlReaderMobile.tablas.add(tablaXmlCabListas);
@@ -106,6 +108,7 @@ public class IncorporaXml
             xmlReaderMobile.tablas.add(tablaXmlRubro);
             xmlReaderMobile.tablas.add(tablaXmlRutaVenta);
             xmlReaderMobile.tablas.add(tablaXmlVendedor);
+            xmlReaderMobile.tablas.add(tablaXmlBarras);
 
 
             xmlReaderMobile2.tablas.add(tablaXmlOferEsp);
