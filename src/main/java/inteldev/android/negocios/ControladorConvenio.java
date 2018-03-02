@@ -22,7 +22,8 @@ public class ControladorConvenio
         this.cliente = cliente;
     }
 
-    public DetBonif obtenerPorcentaje(String articulo, boolean sinCargos) {
+    public DetBonif obtenerPorcentaje(String articulo, boolean sinCargos)
+    {
 
         DetBonif detBonif = new DetBonif();
 
@@ -37,55 +38,45 @@ public class ControladorConvenio
         int cant_sc = 0;
         String condicionCant_sc;
 
-        if (sinCargos) {
+        if (sinCargos)
+        {
             condicionCant_sc = "cant_sc<>0";
-        }else {
+        }
+        else
+        {
             condicionCant_sc = "cant_sc=0";
         }
 
         Calendar fecha = Calendar.getInstance();
 
-        String fechaActual = fecha.get(Calendar.YEAR) + "-" +
-                ( String.format("%02d", fecha.get(Calendar.MONTH) + 1)) + "-" +
-                fecha.get(Calendar.DAY_OF_MONTH);
+        String fechaActual = fecha.get(Calendar.YEAR) + "-" + (String.format("%02d", fecha.get(Calendar.MONTH) + 1)) + "-" + fecha.get(Calendar.DAY_OF_MONTH);
 
-        Cursor cursor = dao.ejecutarConsultaSql("select Alcance.idCabBonif," +
-                "DetBonif.idLinea," +
-                "DetBonif.idRubro," +
-                "DetBonif.idArticulo," +
-                "DetBonif.porcentaje," +
-                "DetBonif.cant_sc," +
-                "CabBonif.fDesde," +
-                "CabBonif.fHasta," +
-                "CabBonif.tipo," +
-                "CabBonif.sinDescBase," +
-                "CabBonif.permiteOe " +
-                "from Alcance,Articulos " +
-                "join CabBonif on CabBonif.idCabBonif = Alcance.idCabBonif " +
-                "join DetBonif on DetBonif.idCabBonif = Alcance.idCabBonif " +
-                "where Alcance.idcliente = '" + this.cliente + "' and " +
-                "'" + fechaActual + "' >= CabBonif.fDesde and " +
-                "'" + fechaActual + "' <= CabBonif.fHasta and " +
-                "Articulos.idArticulo = '" + articulo + "' and (" +
-                "DetBonif.idArticulo = '" + articulo + "' or " +
-                "DetBonif.idRubro = Articulos.idRubro or " +
-                "DetBonif.idLinea = Articulos.idLinea) and "+condicionCant_sc);
+        Cursor cursor = dao.ejecutarConsultaSql("select Alcance.idCabBonif," + "DetBonif.idLinea," + "DetBonif.idRubro," + "DetBonif.idArticulo," + "DetBonif.porcentaje," + "DetBonif.cant_sc," + "CabBonif.fDesde," + "CabBonif.fHasta," + "CabBonif.tipo," + "CabBonif.sinDescBase," + "CabBonif.permiteOe " + "from Alcance,Articulos " + "join CabBonif on CabBonif.idCabBonif = Alcance.idCabBonif " + "join DetBonif on DetBonif.idCabBonif = Alcance.idCabBonif " + "where Alcance.idcliente = '" + this.cliente + "' and " + "'" + fechaActual + "' >= CabBonif.fDesde and " + "'" + fechaActual + "' <= CabBonif.fHasta and " + "Articulos.idArticulo = '" + articulo + "' and (" + "DetBonif.idArticulo = '" + articulo + "' or " + "DetBonif.idRubro = Articulos.idRubro or " + "DetBonif.idLinea = Articulos.idLinea) and " + condicionCant_sc);
 
-        if (cursor.moveToFirst()) {
+        if (cursor.moveToFirst())
+        {
 
-            do {
+            do
+            {
                 docursor:
-                if (!cursor.getString(1).isEmpty()) {
+                if (! cursor.getString(1).isEmpty())
+                {
                     idCabBonifPorLinea = cursor.getInt(0);
                     porcentajePorLinea = cursor.getFloat(4);
                     break docursor;
-                } else {
-                    if (!cursor.getString(2).isEmpty()) {
+                }
+                else
+                {
+                    if (! cursor.getString(2).isEmpty())
+                    {
                         idCabBonifPorRubro = cursor.getInt(0);
                         porcentajePorRubro = cursor.getFloat(4);
                         break docursor;
-                    } else {
-                        if (!cursor.getString(3).isEmpty()) {
+                    }
+                    else
+                    {
+                        if (! cursor.getString(3).isEmpty())
+                        {
                             idCabBonifPorArticulo = cursor.getInt(0);
                             porcentajePorArticulo = cursor.getFloat(4);
                             cant_sc = cursor.getInt(5);
@@ -96,18 +87,20 @@ public class ControladorConvenio
             } while (cursor.moveToNext());
         }
 
-        if (porcentajePorArticulo != 0 || cant_sc!=0 ) {
+        if (porcentajePorArticulo != 0 || cant_sc != 0)
+        {
             detBonif.idCabBonif = idCabBonifPorArticulo;
             detBonif.porcentaje = porcentajePorArticulo;
             detBonif.cant_sc = cant_sc;
         }
         else
         {
-            if (porcentajePorRubro != 0) {
+            if (porcentajePorRubro != 0)
+            {
                 detBonif.idCabBonif = idCabBonifPorRubro;
                 detBonif.porcentaje = porcentajePorRubro;
             }
-        else
+            else
             {
                 if (porcentajePorLinea != 0)
                 {
@@ -116,21 +109,19 @@ public class ControladorConvenio
                 }
             }
         }
-        return  detBonif;
+        return detBonif;
     }
 
-    public int obtenerSinCargosUtilizados(Date fecha, String articulo){
+    public int obtenerSinCargosUtilizados(Date fecha, String articulo)
+    {
 
         int sinCargos = 0;
 
-        Cursor cursor = dao.ejecutarConsultaSql("SELECT SUM(entero) " +
-                                              " FROM detoper JOIN CabOper on caboper.Claveunica = detoper.claveunica " +
-                                              " where sincargo = 1 and " +
-                                              " idarticulo = "+articulo +" and " +
-                                              " CabOper.fecha = "+"'"+fecha.toString()+"'");
+        Cursor cursor = dao.ejecutarConsultaSql("SELECT SUM(entero) FROM detoper JOIN CabOper on caboper.Claveunica = detoper.claveunica where sincargo = 1 and idarticulo = " + articulo + " and CabOper.fecha = '" + fecha.toString() + "' and caboper.idcliente='" + cliente + "'");
 
 
-        if (cursor.moveToFirst()) {
+        if (cursor.moveToFirst())
+        {
             sinCargos = cursor.getInt(0);
         }
 

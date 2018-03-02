@@ -20,42 +20,42 @@ public class ControladorPrecio
 
     }
 
-    public Float obtener(Context context, String cliente, String articulo)
-    {
-
-        Float precio = 0f;
-
-        String[] listas = controladorCliente.obtenerListas(cliente);
-        if (listas != null)
-        {
-            for (String lista : listas)
-            {
-                Cursor cursor = dao.ejecutarConsultaSql("select precio from detlistas" +
-                        " where idLista ='" + lista + "' and articulo = '" + articulo + "'");
-
-                if (cursor.moveToFirst())
-                {
-                    return cursor.getFloat(0);
-                }
-            }
-        }
-        return precio;
-    }
-
 //    public Float obtener(Context context, String cliente, String articulo)
 //    {
 //
 //        Float precio = 0f;
 //
-//        String lista = controladorCliente.obtenerLista(cliente);
-//        if (lista != null) {
-//            Cursor cursor = dao.ejecutarConsultaSql("select precio from detlistas" +
-//                    " where idLista ='" + lista + "' and articulo = '" + articulo + "'");
+//        String[] listas = controladorCliente.obtenerListas(cliente);
+//        if (listas != null)
+//        {
+//            for (String lista : listas)
+//            {
+//                Cursor cursor = dao.ejecutarConsultaSql("select precio from detlistas" +
+//                        " where idLista ='" + lista + "' and articulo = '" + articulo + "'");
 //
-//            if (cursor.moveToFirst())
-//                precio = cursor.getFloat(0);
+//                if (cursor.moveToFirst())
+//                {
+//                    return cursor.getFloat(0);
+//                }
+//            }
 //        }
-//
 //        return precio;
 //    }
+
+    public Float obtener(Context context, String cliente, String articulo)
+    {
+
+        Float precio = 0f;
+
+        String lista = controladorCliente.obtenerLista(cliente);
+        if (lista != null) {
+            Cursor cursor = dao.ejecutarConsultaSql("select precio from detlistas" +
+                    " where idLista ='" + lista + "' and articulo = '" + articulo + "'");
+
+            if (cursor.moveToFirst())
+                precio = cursor.getFloat(0);
+        }
+
+        return precio;
+    }
 }

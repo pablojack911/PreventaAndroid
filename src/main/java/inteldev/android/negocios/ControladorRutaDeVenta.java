@@ -64,22 +64,24 @@ public class ControladorRutaDeVenta
         if (seleccionVisitado == 0)
         {
             whereVisitado = "and not exists ( select claveunica from caboper where " +
-                    "caboper.idCliente = cl.idCliente and caboper.fecha = '" + Fecha.obtenerFechaActual().toString() + "')" +
-                    "and not exists (select distinct idCliente from PosicionesGPS where PosicionesGPS.idCliente = cl.idCliente " +
-                    "and PosicionesGPS.usuario='" + loginUsuario + "' " +
-                    "and strftime('%Y-%m-%d', PosicionesGPS.Fecha)== '" + Fecha.obtenerFechaActual().toString() + "')";
-
+                    "caboper.idCliente = cl.idCliente and caboper.fecha = '" + Fecha.obtenerFechaActual().toString() + "')";
+//            whereVisitado = "and not exists ( select claveunica from caboper where " +
+//                    "caboper.idCliente = cl.idCliente and caboper.fecha = '" + Fecha.obtenerFechaActual().toString() + "')" +
+//                    "and not exists (select distinct idCliente from PosicionesGPS where PosicionesGPS.idCliente = cl.idCliente " +
+//                    "and PosicionesGPS.usuario='" + loginUsuario + "' " +
+//                    "and strftime('%Y-%m-%d', PosicionesGPS.Fecha)== '" + Fecha.obtenerFechaActual().toString() + "')";
         }
         else
         {
             if (seleccionVisitado == 1)
             {
-                whereVisitado = "and (exists ( select claveunica from caboper where " +
-                        "caboper.idCliente = cl.idCliente and caboper.fecha = '" + Fecha.obtenerFechaActual().toString() + "')" +
-                        "or  exists (select distinct idCliente from PosicionesGPS where PosicionesGPS.idCliente = cl.idCliente " +
-                        "and PosicionesGPS.usuario='" + loginUsuario + "' " +
-                        "and strftime('%Y-%m-%d', PosicionesGPS.Fecha)== '" + Fecha.obtenerFechaActual().toString() + "'))";
-
+                whereVisitado = "and exists ( select claveunica from caboper where " +
+                        "caboper.idCliente = cl.idCliente and caboper.fecha = '" + Fecha.obtenerFechaActual().toString() + "')";
+//                whereVisitado = "and (exists ( select claveunica from caboper where " +
+//                        "caboper.idCliente = cl.idCliente and caboper.fecha = '" + Fecha.obtenerFechaActual().toString() + "')" +
+//                        "or  exists (select distinct idCliente from PosicionesGPS where PosicionesGPS.idCliente = cl.idCliente " +
+//                        "and PosicionesGPS.usuario='" + loginUsuario + "' " +
+//                        "and strftime('%Y-%m-%d', PosicionesGPS.Fecha)== '" + Fecha.obtenerFechaActual().toString() + "'))";
             }
             else
             {
