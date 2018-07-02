@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="inteldev.android" >
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name="inteldev.android.presentation.MainActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="inteldev.android.presentation.Login"
+            android:label="@string/title_activity_login" >
+        </activity>
+        <activity
+            android:name="inteldev.android.presentation.RutaDeVenta"
+            android:label="@string/title_activity_ruta_de_venta" >
+        </activity>
+        <activity
+            android:name="inteldev.android.lista_clientes_ruta_de_venta"
+            android:label="@string/title_activity_lista_clientes_ruta_de_venta" >
+        </activity>
+        <activity
+            android:name="inteldev.android.presentation.Pedidos"
+            android:label="@string/title_activity_pedidos" >
+        </activity>
+        <activity
+            android:name="inteldev.android.presentation.lista_pedido"
+            android:label="@string/title_activity_lista_pedido" >
+        </activity>
+        <activity
+            android:name="inteldev.android.presentation.Recibir"
+            android:label="@string/title_activity_recibir" >
+        </activity>
+        <activity
+            android:name="inteldev.android.presentation.Convenio"
+            android:label="@string/title_activity_convenio" >
+        </activity>
+        <activity
+            android:name="inteldev.android.Of"
+            android:label="@string/title_activity_of" >
+        </activity>
+        <activity
+            android:name="inteldev.android.lista_ofertas"
+            android:label="@string/title_activity_lista_ofertas" >
+        </activity>
+        <activity
+            android:name="inteldev.android.presentation.lista_oferta"
+            android:label="@string/title_activity_lista_oferta" >
+        </activity>
+        <activity
+            android:name="inteldev.android.presentation.Oferta"
+            android:label="@string/title_activity_ofertas" >
+        </activity>
+        <activity
+            android:name="inteldev.android.presentation.ArticulosOferta"
+            android:label="@string/title_activity_articulos_oferta" >
+        </activity>
+        <activity
+            android:name="inteldev.android.presentation.Detalle_Oferta"
+            android:label="@string/title_activity_detalle_oferta" >
+        </activity>
+        <activity
+            android:name="inteldev.android.dialogo_cantidad"
+            android:label="@string/title_activity_dialogo_cantidad" >
+        </activity>
+        <activity
+            android:name=".presentation.DialogoCantidad"
+            android:label="@string/title_activity_dialogo_cantidad" >
+        </activity>
+      <service
+          android:name=".servicios.ServicioGeoLocalizacion"
+          android:process="inteldevGeo">
+      </service>
+    </application>
+
+</manifest>
