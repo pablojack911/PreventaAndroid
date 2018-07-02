@@ -16,7 +16,7 @@ class DatabaseHelper extends SQLiteOpenHelper
 {
     private static final File directory = Environment.getExternalStorageDirectory();
     private static final String DB_NAME = directory + "/" + Environment.DIRECTORY_DOWNLOADS + "/InteldevMobile.sqlite";
-    private static final int DB_SCHEMA_VERSION = 2;
+    private static final int DB_SCHEMA_VERSION = 3;
     private static DatabaseHelper mInstance;
     private CreateTables createTables;
 
@@ -122,6 +122,7 @@ class DatabaseHelper extends SQLiteOpenHelper
         sqLiteDatabase.execSQL(createTables.IndicePosicionesGPSEnviado);
         sqLiteDatabase.execSQL(createTables.IndicePosicionesGPS_fecha);
         sqLiteDatabase.execSQL(createTables.IndicePosicionesGPS_usuario);
+        sqLiteDatabase.execSQL(createTables.getIndicePosicionesGPSMotivoNoCompra);
         sqLiteDatabase.execSQL(createTables.TablaBarras);
         sqLiteDatabase.execSQL(createTables.IndiceBarras_barcode);
     }

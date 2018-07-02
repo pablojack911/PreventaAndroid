@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,7 +14,7 @@ import android.widget.Toast;
 import inteldev.android.R;
 
 
-public class Convenio extends Activity
+public class Convenio extends AppCompatActivity
 {
 
     EditText edtDescuento;
@@ -31,9 +32,9 @@ public class Convenio extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_convenio);
 
-        edtDescuento = (EditText) findViewById(R.id.edtDescuento);
-        edtMotivo = (EditText) findViewById(R.id.edtMotivo);
-        spMotivo = (Spinner) findViewById(R.id.spMotivo);
+        edtDescuento = findViewById(R.id.edtDescuento);
+        edtMotivo = findViewById(R.id.edtMotivo);
+        spMotivo = findViewById(R.id.spMotivo);
 
         btnAgregar();
 
@@ -41,7 +42,7 @@ public class Convenio extends Activity
 
     private void btnAgregar()
     {
-        btnAgregar = (Button) findViewById(R.id.btnAgregar);
+        btnAgregar = findViewById(R.id.btnAgregar);
         btnAgregar.setOnClickListener(new View.OnClickListener()
         {
             @Override

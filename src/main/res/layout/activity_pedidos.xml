@@ -1,8 +1,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
+    xmlns:numberpicker="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <TabHost
         android:id="@android:id/tabhost"
@@ -35,22 +36,19 @@
                     <Spinner
                         android:id="@+id/spLinea"
                         android:layout_width="match_parent"
-                        android:layout_height="35dip"
-                        />
+                        android:layout_height="35dip" />
 
 
                     <Spinner
                         android:id="@+id/spRubro"
                         android:layout_width="match_parent"
-                        android:layout_height="35dip"
-                        />
+                        android:layout_height="35dip" />
 
                     <Spinner
                         android:id="@+id/spArticulo"
                         android:layout_width="match_parent"
                         android:layout_height="35dip"
-                        android:isScrollContainer="true"
-                        />
+                        android:isScrollContainer="true" />
 
                     <LinearLayout
                         android:layout_width="fill_parent"
@@ -69,7 +67,7 @@
                             android:inputType="number"
                             android:paddingLeft="@dimen/list_horizontal_padding"
                             android:paddingRight="@dimen/list_horizontal_padding"
-                            android:paddingTop="@dimen/list_top_padding"/>
+                            android:paddingTop="@dimen/list_top_padding" />
 
                         <EditText
                             android:id="@+id/edtArticulo"
@@ -77,9 +75,12 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_weight="30"
+                            android:focusableInTouchMode="true"
                             android:hint="@string/codigo_art"
                             android:inputType="number"
-                            android:selectAllOnFocus="true"/>
+                            android:nextFocusDown="@+id/edtArticulo"
+                            android:selectAllOnFocus="true"
+                             />
 
                         <Button
                             android:id="@+id/btnBuscarCodigoArticulo"
@@ -88,55 +89,128 @@
                             android:layout_gravity="center"
                             android:layout_margin="5dp"
                             android:layout_weight="10"
-                            android:background="@drawable/search"/>
+                            android:background="@drawable/search"
+                            android:focusable="false"
+                            android:nextFocusDown="@+id/edtArticulo" />
 
+                    </LinearLayout>
+
+
+                    <!--&lt;!&ndash;CANTIDAD&ndash;&gt;-->
+                    <!--<LinearLayout-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_weight="30"-->
+                    <!--android:gravity="center"-->
+                    <!--android:orientation="vertical">-->
+
+                    <!--<EditText-->
+                    <!--android:id="@+id/edtCantidad"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="match_parent"-->
+                    <!--android:gravity="center"-->
+                    <!--android:hint="@string/cantidad"-->
+                    <!--android:inputType="number"-->
+                    <!--android:selectAllOnFocus="true"-->
+                    <!--android:textAlignment="center"/>-->
+
+                    <!--<LinearLayout-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:orientation="horizontal">-->
+
+                    <!--<Button-->
+                    <!--android:id="@+id/btnMenos"-->
+                    <!--style="?android:attr/buttonStyleSmall"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="@string/minus"/>-->
+
+                    <!--<Button-->
+                    <!--android:id="@+id/btnMas"-->
+                    <!--style="?android:attr/buttonStyleSmall"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="@string/plus"/>-->
+                    <!--</LinearLayout>-->
+                    <!--</LinearLayout>-->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:paddingBottom="5dp"
+                        android:paddingTop="5dp">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:paddingEnd="10dp"
+                            android:paddingStart="10dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/cantidad_bultos"
+                                android:textSize="12sp" />
+
+                            <!--<com.travijuu.numberpicker.library.NumberPicker-->
+                            <!--android:id="@+id/etCantidadBultos"-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_gravity="center"-->
+                            <!--android:orientation="horizontal"-->
+                            <!--numberpicker:focusable="true"-->
+                            <!--numberpicker:min="0"-->
+                            <!--numberpicker:unit="1"-->
+                            <!--numberpicker:value="0" />-->
+                            <com.travijuu.numberpicker.library.NumberPicker
+                                android:id="@+id/etCantidadBultos"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:orientation="horizontal"
+                                numberpicker:focusable="true"
+                                numberpicker:min="0"
+                                numberpicker:unit="1"
+                                numberpicker:value="0" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/llFracciones"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:paddingEnd="10dp"
+                            android:paddingStart="10dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/cantidad_fracciones"
+                                android:textSize="12sp" />
+
+                            <com.travijuu.numberpicker.library.NumberPicker
+                                android:id="@+id/etCantidadUnidades"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:orientation="horizontal"
+                                numberpicker:focusable="true"
+                                numberpicker:min="0"
+                                numberpicker:unit="1"
+                                numberpicker:value="0" />
+                        </LinearLayout>
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:baselineAligned="false"
+                        android:gravity="center"
                         android:orientation="horizontal"
                         android:weightSum="100">
-
-                        <!--CANTIDAD-->
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="30"
-                            android:gravity="center"
-                            android:orientation="vertical">
-
-                            <EditText
-                                android:id="@+id/edtCantidad"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:gravity="center"
-                                android:hint="@string/cantidad"
-                                android:inputType="number"
-                                android:selectAllOnFocus="true"
-                                android:textAlignment="center"/>
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal">
-
-                                <Button
-                                    android:id="@+id/btnMenos"
-                                    style="?android:attr/buttonStyleSmall"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/minus"/>
-
-                                <Button
-                                    android:id="@+id/btnMas"
-                                    style="?android:attr/buttonStyleSmall"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/plus"/>
-                            </LinearLayout>
-                        </LinearLayout>
                         <!--DTO / PRECIO-->
                         <LinearLayout
                             android:layout_width="0dp"
@@ -161,7 +235,7 @@
                                     android:paddingRight="8dp"
                                     android:paddingStart="8dp"
                                     android:text="@string/unit_precio"
-                                    android:textAllCaps="false"/>
+                                    android:textAllCaps="false" />
 
                                 <EditText
                                     android:id="@+id/edtUnitario"
@@ -169,7 +243,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="70"
                                     android:focusable="false"
-                                    android:inputType="text"/>
+                                    android:inputType="text" />
                             </LinearLayout>
 
                             <LinearLayout
@@ -184,7 +258,7 @@
                                     android:layout_gravity="center"
                                     android:layout_weight="30"
                                     android:text="@string/descuento_porcentaje"
-                                    android:textSize="12sp"/>
+                                    android:textSize="12sp" />
 
                                 <EditText
                                     android:id="@+id/edtDescuento"
@@ -192,7 +266,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="70"
                                     android:focusable="false"
-                                    android:inputType="number"/>
+                                    android:inputType="number" />
                             </LinearLayout>
 
                             <LinearLayout
@@ -210,7 +284,7 @@
                                     android:paddingLeft="8dp"
                                     android:paddingRight="8dp"
                                     android:paddingStart="8dp"
-                                    android:text="@string/final_pesos"/>
+                                    android:text="@string/final_pesos" />
 
                                 <EditText
                                     android:id="@+id/edtFinal"
@@ -218,7 +292,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="70"
                                     android:focusable="false"
-                                    android:inputType="number"/>
+                                    android:inputType="number" />
                             </LinearLayout>
 
 
@@ -234,7 +308,7 @@
                                 android:id="@+id/btnOk"
                                 android:layout_width="50dip"
                                 android:layout_height="50dip"
-                                android:background="@android:drawable/ic_input_add"/>
+                                android:background="@android:drawable/ic_input_add" />
                         </LinearLayout>
 
                     </LinearLayout>
@@ -254,7 +328,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="30"
                             android:text="@string/total_pesos"
-                            android:textSize="24sp"/>
+                            android:textSize="24sp" />
 
                         <EditText
                             android:id="@+id/edtTotalPedido"
@@ -265,7 +339,7 @@
                             android:gravity="end"
                             android:inputType="number|numberDecimal"
                             android:textIsSelectable="false"
-                            android:textSize="24sp"/>
+                            android:textSize="24sp" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -287,14 +361,14 @@
                             android:id="@+id/edtBuscadorCodigoOferta"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="number"/>
+                            android:inputType="number" />
                     </LinearLayout>
 
                     <ListView
                         android:id="@+id/lvOferta"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:padding="8dp"/>
+                        android:padding="8dp" />
 
                 </LinearLayout>
                 <!--Detalle-->
@@ -308,7 +382,7 @@
                         android:id="@+id/lvPedidos"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:padding="8dp"/>
+                        android:padding="8dp" />
 
                 </LinearLayout>
                 <!--NoCompra-->
@@ -329,32 +403,32 @@
                             android:id="@+id/rbCerrado"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/cerrado"/>
+                            android:text="@string/cerrado" />
 
                         <RadioButton
                             android:id="@+id/rbNoEstabaElResponsable"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/no_estaba_el_responsable"/>
+                            android:text="@string/no_estaba_el_responsable" />
 
                         <RadioButton
                             android:id="@+id/rbTieneStock"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/tiene_stock"/>
+                            android:text="@string/tiene_stock" />
 
                         <RadioButton
                             android:id="@+id/rbNoTieneDinero"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/no_tiene_dinero"/>
+                            android:text="@string/no_tiene_dinero" />
                     </RadioGroup>
 
                     <Button
                         android:id="@+id/btnOkNoCompra"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/ok"/>
+                        android:text="@string/ok" />
 
                 </LinearLayout>
             </FrameLayout>
@@ -367,5 +441,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription=""
-        tools:ignore="ContentDescription"/>
+        tools:ignore="ContentDescription" />
 </LinearLayout>

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,7 +21,7 @@ import inteldev.android.negocios.ControladorPedido;
 import inteldev.android.negocios.FabricaNegocios;
 
 
-public class Detalle_Oferta extends Activity
+public class Detalle_Oferta extends AppCompatActivity
 {
 
     ControladorPedido controladorPedido;

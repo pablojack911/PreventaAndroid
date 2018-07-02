@@ -1,23 +1,37 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="inteldev.android.presentation.RutaDeVenta" >
-
-    <item android:id="@+id/Ordenarlista" android:title="Ordenar lista"
-        android:icon="@android:drawable/ic_menu_agenda">
+    tools:context="inteldev.android.presentation.RutaDeVenta">
+    <item
+        android:id="@+id/menuSearch"
+        android:icon="@drawable/ic_search"
+        android:title="@string/buscar"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="ifRoom|collapseActionView" />
+    <item
+        android:id="@+id/Ordenarlista"
+        android:icon="@android:drawable/ic_menu_agenda"
+        android:title="@string/ordenar_lista">
         <menu>
-            <group android:id="@+id/grupo1">
-
-                <item android:id="@+id/OrdenarlistaPorNombre"
-                    android:title="Nombre" />
-                <item android:id="@+id/OrdenarListaPorDomicilio"
-                    android:title="Domicilio" />
-                <item android:id="@+id/OrdenarListaPorCuit"
-                    android:title="Cuit" />
-                <item android:id="@+id/OrdenarListaPorCodigo"
-                    android:title="Codigo" />
-                <item android:id="@+id/OrdenarListaPorRecorrido"
-                    android:title="Recorrido" />
+            <group
+                android:id="@+id/grupo1"
+                android:checkableBehavior="single">
+                <item
+                    android:id="@+id/OrdenarlistaPorNombre"
+                    android:title="@string/nombre" />
+                <item
+                    android:id="@+id/OrdenarListaPorDomicilio"
+                    android:title="@string/domicilio" />
+                <item
+                    android:id="@+id/OrdenarListaPorCuit"
+                    android:title="@string/cuit" />
+                <item
+                    android:id="@+id/OrdenarListaPorCodigo"
+                    android:title="@string/codigo" />
+                <item
+                    android:id="@+id/OrdenarListaPorRecorrido"
+                    android:checked="true"
+                    android:title="@string/recorrido" />
             </group>
         </menu>
     </item>

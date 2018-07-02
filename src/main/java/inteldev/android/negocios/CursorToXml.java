@@ -75,7 +75,8 @@ public class CursorToXml
                         case 3:
                             if (cursor.getColumnName(i).toString().toLowerCase().contains("fecha"))
                             {
-                                String fechaString = String.valueOf(cursor.getString(i))+"T00:00:00";
+                                String fechaString = String.valueOf(cursor.getString(i));
+//                                fechaString+="T00:00:00";
                                 campo.appendChild(doc.createTextNode(fechaString));
                             }else
                                 campo.appendChild(doc.createTextNode(String.valueOf(cursor.getString(i))));

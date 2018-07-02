@@ -31,6 +31,7 @@ import inteldev.android.negocios.ControladorArticulo;
 import inteldev.android.negocios.FabricaNegocios;
 import inteldev.android.negocios.Fecha;
 import inteldev.android.negocios.Mapeador;
+import inteldev.android.negocios.SharedPreferencesManager;
 import inteldev.android.presentation.vistaModelo.IListenerDialogoCantidad;
 import inteldev.android.presentation.vistaModelo.OferOperOfertas;
 
@@ -71,7 +72,7 @@ public class Detalle_Oferta_NoConfirmada extends FragmentActivity
 
         context = this;
 
-        loginUsuario = LoginObservable.getInstancia().getLoginUsuario();
+        loginUsuario = SharedPreferencesManager.getLoginUsuario(Detalle_Oferta_NoConfirmada.this);
 
         controladorArticulo = FabricaNegocios.obtenerControladorArticulo(getApplicationContext());
 
@@ -122,14 +123,14 @@ public class Detalle_Oferta_NoConfirmada extends FragmentActivity
                 {
                     cerrarOferta(context, valor);
                     Intent intent = new Intent();
-                    setResult(Activity.RESULT_CANCELED, intent);
+                    setResult(Activity.RESULT_OK, intent);
                     finish();
                 }
             }
         });
         dialogoCantidad = FabricaMensaje.dialogoCantidad(this);
 
-        edtTotalOfertaNoConfirmada.setText(Float.toString(totalOferta));
+        edtTotalOfertaNoConfirmada.setText(String.format("%.2f", totalOferta));
 
         btnConfirmarOferta.setOnClickListener(new View.OnClickListener()
         {
@@ -191,8 +192,7 @@ public class Detalle_Oferta_NoConfirmada extends FragmentActivity
             {
                 if (!(cantidad >= ofer_det.D_Cant && cantidad <= ofer_det.H_Cant))
                 {
-                    mensaje = mensaje + "Error en Base: La cantidad de " + ofer_det.Descrip + "debe ser > " + String.valueOf(ofer_det.D_Cant) + " y <= " +
-                            String.valueOf(ofer_det.H_Cant) + "\n";
+                    mensaje = mensaje + "Error en Base: La cantidad de " + ofer_det.Descrip + "debe ser > " + String.valueOf(ofer_det.D_Cant) + " y <= " + String.valueOf(ofer_det.H_Cant) + "\n";
                 }
             }
 
@@ -232,8 +232,7 @@ public class Detalle_Oferta_NoConfirmada extends FragmentActivity
 
         if (!(cantidadTotalBase >= oferEsp.Base_Dcant && cantidadTotalBase <= oferEsp.Base_Hcant))
         {
-            mensaje = mensaje + "Error en BASE: La cantidad total debe ser > " + String.valueOf(oferEsp.Base_Dcant) + " y <= " +
-                    String.valueOf(oferEsp.Base_Hcant) + "\n";
+            mensaje = mensaje + "Error en BASE: La cantidad total debe ser > " + String.valueOf(oferEsp.Base_Dcant) + " y <= " + String.valueOf(oferEsp.Base_Hcant) + "\n";
         }
 
         if (mensaje.isEmpty())
@@ -337,7 +336,7 @@ public class Detalle_Oferta_NoConfirmada extends FragmentActivity
     {
         Intent intent = new Intent();
         intent.putExtra("oferOpers", oferOpers);
-        setResult(RESULT_OK, intent);
+        setResult(RESULT_CANCELED, intent);
         finish();
     }
 

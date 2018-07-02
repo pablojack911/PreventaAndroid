@@ -8,7 +8,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 
 import inteldev.android.R;
-import inteldev.android.presentation.LoginObservable;
+import inteldev.android.negocios.SharedPreferencesManager;
 
 import static inteldev.android.CONSTANTES.ID_CLIENTE_SELECCIONADO;
 
@@ -27,7 +27,7 @@ public class DescuentosConveniosCollection extends FragmentActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dtos_convs);
-        loginUsuario = LoginObservable.getInstancia().getLoginUsuario();
+        loginUsuario = SharedPreferencesManager.getLoginUsuario(DescuentosConveniosCollection.this);
         String clienteSeleccionado;
         if (getIntent().hasExtra(ID_CLIENTE_SELECCIONADO))
         {
@@ -37,7 +37,7 @@ public class DescuentosConveniosCollection extends FragmentActivity
         {
             clienteSeleccionado = null;
         }
-        mDescuentosConveniosPagerAdapter = new DescuentosConveniosPagerAdapter(getSupportFragmentManager());
+        mDescuentosConveniosPagerAdapter = new DescuentosConveniosPagerAdapter(DescuentosConveniosCollection.this,getSupportFragmentManager());
         mDescuentosConveniosPagerAdapter.idClienteSeleccionado = clienteSeleccionado;
         mViewPager = (ViewPager) findViewById(R.id.dtos_convs_pager);
         mViewPager.setAdapter(mDescuentosConveniosPagerAdapter);

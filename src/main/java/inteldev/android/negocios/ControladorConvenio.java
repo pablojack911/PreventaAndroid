@@ -47,10 +47,7 @@ public class ControladorConvenio
             condicionCant_sc = "cant_sc=0";
         }
 
-        Calendar fecha = Calendar.getInstance();
-
-        String fechaActual = fecha.get(Calendar.YEAR) + "-" + (String.format("%02d", fecha.get(Calendar.MONTH) + 1)) + "-" + fecha.get(Calendar.DAY_OF_MONTH);
-
+        String fechaActual = Fecha.obtenerFechaHoraActual();
         Cursor cursor = dao.ejecutarConsultaSql("select Alcance.idCabBonif," + "DetBonif.idLinea," + "DetBonif.idRubro," + "DetBonif.idArticulo," + "DetBonif.porcentaje," + "DetBonif.cant_sc," + "CabBonif.fDesde," + "CabBonif.fHasta," + "CabBonif.tipo," + "CabBonif.sinDescBase," + "CabBonif.permiteOe " + "from Alcance,Articulos " + "join CabBonif on CabBonif.idCabBonif = Alcance.idCabBonif " + "join DetBonif on DetBonif.idCabBonif = Alcance.idCabBonif " + "where Alcance.idcliente = '" + this.cliente + "' and " + "'" + fechaActual + "' >= CabBonif.fDesde and " + "'" + fechaActual + "' <= CabBonif.fHasta and " + "Articulos.idArticulo = '" + articulo + "' and (" + "DetBonif.idArticulo = '" + articulo + "' or " + "DetBonif.idRubro = Articulos.idRubro or " + "DetBonif.idLinea = Articulos.idLinea) and " + condicionCant_sc);
 
         if (cursor.moveToFirst())

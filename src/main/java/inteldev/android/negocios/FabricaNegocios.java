@@ -1,5 +1,6 @@
 package inteldev.android.negocios;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -17,6 +18,7 @@ import static android.content.Context.LOCATION_SERVICE;
 public class FabricaNegocios
 {
 
+    @SuppressLint("MissingPermission")
     public static String obtenerImei(Context context)
     {
         TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);

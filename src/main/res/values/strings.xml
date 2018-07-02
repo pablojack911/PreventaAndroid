@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Preventa Android</string>
-    <string name="app_version">1.11</string>
+    <string name="app_version">CHINAS 1.0</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Opciones</string>
     <string name="title_activity_login">Login</string>
@@ -54,8 +54,11 @@
     <string name="ok">OK</string>
     <string name="tiene_stock">Tiene Stock</string>
     <string name="total_pesos">Total: $</string>
+    <string name="total_pesos_pedido">Total del pedido</string>
     <string name="unit_precio">Unit.</string>
     <string name="cantidad_corto">Cant.</string>
+    <string name="cantidad_frac">Unid.</string>
+    <string name="cantidad_bult">Bultos</string>
     <string name="recibir_datos">Recibir Datos</string>
     <string name="descuento">Descuento</string>
     <string name="codigo">Código</string>
@@ -69,6 +72,40 @@
     <string name="tomar_foto_a_cliente">Tomar foto a Cliente</string>
     <string name="vencimiento">Vencimiento</string>
     <string name="sin_cargo">Sin cargo</string>
-    <string name="versi_n">Versión:</string>
+    <string name="versi_n">Versión: </string>
+    <string name="cantidad_bultos">Bultos</string>
+    <string name="cantidad_fracciones">Unidades</string>
+    <string name="buscar_clientes">Buscar nombre o código…</string>
+    <string name="buscar">Buscar</string>
+    <string name="busca_artic">Buscador de artículos</string>
+    <string name="not_logged_in">NO ESTA LOGUEADO</string>
+
+    <!-- Strings related to login -->
+    <string name="usuario">Usuario</string>
+    <string name="prompt_password">Contraseña</string>
+    <string name="action_sign_in">Iniciar sesión</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">Usuario y contraseña no coinciden.</string>
+    <string name="error_field_required">Campo obligatorio</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+    <string name="cerrar_sesi_n">Cerrar sesión</string>
+    <string name="recibir">Recibir</string>
+    <string name="motivo">Motivo</string>
+    <string name="precio_unitario">Precio Unitario</string>
+    <string name="precio_unitario_lista">Precio de Lista</string>
+    <string name="con_dto">Con Descuento</string>
+    <string name="articulo">Artículo</string>
+    <string name="precio_unitario_dto_folder">Precio Oferta</string>
+    <string name="folder">Folder</string>
+    <string name="agregar">Agregar</string>
+    <string name="ordenar_lista">Ordenar lista</string>
+    <string name="nombre">Nombre</string>
+    <string name="domicilio">Domicilio</string>
+    <string name="cuit">Cuit</string>
+    <string name="recorrido">Recorrido</string>
 
 </resources>

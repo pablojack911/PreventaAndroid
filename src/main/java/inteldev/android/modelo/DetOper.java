@@ -18,6 +18,7 @@ public class DetOper extends BaseModel {
     public float tasa_iibb;
     public String oferta;
     public int sincargo;
+    public int unidadVenta;
 
     public DetOper() {
         this.setKey("claveUnica");

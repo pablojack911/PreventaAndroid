@@ -1,18 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="inteldev.android">
+    package="inteldev.android">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
         android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_descriptor"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
@@ -20,87 +27,96 @@
             android:name=".presentation.MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleInstance"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".presentation.LoginActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".presentation.Login"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:label="@string/title_activity_login"
-            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".presentation.RutaDeVenta"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/title_activity_ruta_de_venta"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".presentation.Pedidos"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/title_activity_pedidos"
-            android:windowSoftInputMode="adjustPan"/>
-        <activity
-            android:name=".presentation.lista_pedido"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:label="@string/title_activity_lista_pedido"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".presentation.Recibir"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/title_activity_recibir"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".presentation.Convenio"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/title_activity_convenio"
-            android:windowSoftInputMode="adjustPan"/>
-        <activity
-            android:name=".presentation.lista_oferta"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:label="@string/title_activity_lista_oferta"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".presentation.Oferta"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/title_activity_ofertas"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".presentation.ArticulosOferta"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/title_activity_articulos_oferta"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".presentation.Detalle_Oferta"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/title_activity_detalle_oferta"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".presentation.Detalle_Oferta_NoConfirmada"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/oferOperNoConfirmada"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".presentation.DialogoCantidad"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/title_activity_dialogo_cantidad"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".presentation.ViewPager.ClienteCollection"
-            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:configChanges="orientation|screenSize"
             android:label="@string/view_pager"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".presentation.DescuentosConvenios.DescuentosConveniosCollection"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/dtos_convs"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".presentation.BuscarArticulo"
+            android:windowSoftInputMode="stateVisible" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".presentation.ConvenioMayorista"
+            android:theme="@style/Dialog.NoTitle"
+            android:windowSoftInputMode="stateVisible" />
+        <activity
+            android:name=".presentation.PedidosMayorista"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:label="@string/title_activity_pedidos"
+            android:windowSoftInputMode="adjustPan" />
 
-        <service android:name=".servicios.GPSIntentService"/>
-        <service android:name=".servicios.ServiceGeolocation"/>
+        <service android:name=".servicios.GPSIntentService" />
+        <!-- <service android:name=".servicios.ServiceGeolocation" /> -->
+        <!--android:theme="@style/Theme.AppCompat.Dialog"-->
 
+        <service android:name=".servicios.GPSLocationService" />
+
+        <activity android:name=".presentation.Folder.Folder"></activity>
     </application>
 
 </manifest>

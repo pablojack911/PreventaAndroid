@@ -1,12 +1,13 @@
 package inteldev.android.presentation.DescuentosConvenios;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import inteldev.android.CONSTANTES;
-import inteldev.android.presentation.LoginObservable;
+import inteldev.android.negocios.SharedPreferencesManager;
 
 import static inteldev.android.CONSTANTES.CONVENIOS_SIN_CARGO_VIEW;
 import static inteldev.android.CONSTANTES.DESCUENTOS_ARTICULOS_VIEW;
@@ -18,13 +19,13 @@ import static inteldev.android.CONSTANTES.ID_CLIENTE_SELECCIONADO;
 
 public class DescuentosConveniosPagerAdapter extends FragmentStatePagerAdapter
 {
-    String loginUsuario;
+    private String loginUsuario;
     String idClienteSeleccionado;
 
-    public DescuentosConveniosPagerAdapter(FragmentManager fm)
+    public DescuentosConveniosPagerAdapter(Context context, FragmentManager fm)
     {
         super(fm);
-        loginUsuario = LoginObservable.getInstancia().getLoginUsuario();
+        loginUsuario = SharedPreferencesManager.getLoginUsuario(context);
     }
 
     @Override

@@ -44,8 +44,8 @@ public class CreateTables
             "permiteoe int)";
 
     public String IndiceCabBonif_idCabBonif = "create index IF NOT EXISTS cabBonif_idCabBonif on cabBonif (idCabBonif asc)";
-    public String IndiceCabBonif_fDesde = "create index IF NOT EXISTS Alcance_fDesde on cabBonif (fdesde asc)";
-    public String IndiceCabBonif_fHasta = "create index IF NOT EXISTS Alcance_fHasta on cabBonif (fhasta asc)";
+    public String IndiceCabBonif_fDesde = "create index IF NOT EXISTS cabBonif_fDesde on cabBonif (fdesde asc)";
+    public String IndiceCabBonif_fHasta = "create index IF NOT EXISTS cabBonif_fHasta on cabBonif (fhasta asc)";
 
     public String TablacabListas = "create table cabListas " +
             "(IdLista text, " +
@@ -148,6 +148,7 @@ public class CreateTables
     public String TabladetListas = "create table detListas " +
             "(idLista text, " +
             "precio float, " +
+            "folder float, " +
             "articulo text, " +
             "lastUpdate datetime, " +
             "borrado int, " +
@@ -166,6 +167,7 @@ public class CreateTables
             "descuento float, " +
             "entero int, " +
             "fraccion int, " +
+            "unidadVenta int, "+
             "enviado int, " +
             "idFila text, " +
             "tasa_iibb float, " +
@@ -363,7 +365,8 @@ public class CreateTables
             "borrado int)";
 
     public String TablaPosicionesGPS = "create table PosicionesGPS " +
-            "(fecha datetime, " +
+            "(id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "fecha datetime, " +
             "imei text," +
             "usuario text," +
             "latitud float, " +
@@ -381,12 +384,13 @@ public class CreateTables
     public String IndicePosicionesGPSEnviado = "create index if not exists PosicionesGPS_enviado on PosicionesGPS (enviado asc)";
     public String IndicePosicionesGPS_fecha = "create index if not exists PosicionesGPS_fecha on PosicionesGPS (fecha asc)";
     public String IndicePosicionesGPS_usuario = "create index if not exists PosicionesGPS_usuario on PosicionesGPS (usuario asc)";
+    public String getIndicePosicionesGPSMotivoNoCompra = "create index if not exists PosicionesGPS_motivoNoCompra on PosicionesGPS (motivoNoCompra asc)";
 
     public String TablaBarras = "create table Barras " +
             "(idArticulo text," +
             "barcode text," +
             "borrado int," +
-            "lastUpdate date)";
+            "lastupdate date)";
 
     public String IndiceBarras_barcode = "create index if not exists Barras_barcode on Barras (barcode asc)";
 

@@ -1,31 +1,33 @@
 package inteldev.android.presentation;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
-import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -33,6 +35,9 @@ import android.widget.Spinner;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.travijuu.numberpicker.library.Enums.ActionEnum;
+import com.travijuu.numberpicker.library.Interface.ValueChangedListener;
 
 import org.ksoap2.serialization.SoapObject;
 
@@ -66,45 +71,46 @@ import inteldev.android.negocios.ConvertirFotoABase64;
 import inteldev.android.negocios.FabricaNegocios;
 import inteldev.android.negocios.Fecha;
 import inteldev.android.negocios.Mapeador;
+import inteldev.android.negocios.SharedPreferencesManager;
 import inteldev.android.negocios.SpinnerManager;
 import inteldev.android.negocios.WebServiceHelper;
 import inteldev.android.presentation.DescuentosConvenios.DescuentosConveniosCollection;
 import inteldev.android.presentation.vistaModelo.DetallePedido;
 import inteldev.android.servicios.GPSIntentService;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+import static inteldev.android.CONSTANTES.ARTICULO_SELECCIONADO;
 import static inteldev.android.CONSTANTES.CLAVE_UNICA_CABOPER;
-import static inteldev.android.CONSTANTES.CLIENTE_KEY;
 import static inteldev.android.CONSTANTES.CODIGO_OFERTA;
 import static inteldev.android.CONSTANTES.ID_CLIENTE_SELECCIONADO;
+import static inteldev.android.CONSTANTES.INTENT_BUSCAR_ARTICULO;
 import static inteldev.android.CONSTANTES.INTENT_CONVENIO;
 import static inteldev.android.CONSTANTES.INTENT_OFERTA;
+import static inteldev.android.CONSTANTES.INTENT_TAKE_PICTURE;
 import static inteldev.android.CONSTANTES.NOMBRE_CLIENTE_KEY;
 import static inteldev.android.CONSTANTES.POSICION_GPS_KEY;
 import static inteldev.android.CONSTANTES.USUARIO_KEY;
+import static inteldev.android.presentation.Utiles.cambiaVisibilidad;
 
-public class Pedidos extends FragmentActivity
+public class Pedidos extends AppCompatActivity
 {
-
-//    public OferOper oferOper;
-
-    //    public static LocationManager locationManager = null;
     Uri output;
     Spinner spLinea;
     Spinner spRubro;
-
-    //    String idA;
     Spinner spArticulo;
     EditText edtCodigoArticulo;
     EditText edtArticulo;
     EditText edtUnitario;
     EditText edtDescuento;
-    EditText edtCantidad;
+    com.travijuu.numberpicker.library.NumberPicker edtBultos;
+    com.travijuu.numberpicker.library.NumberPicker edtFracciones;
     EditText edtFinal;
+    EditText edtTotalPedido;
     String idLineaSeleccionada = "XXX";
     String idRubroSeleccionado = "XXX";
-    String idArticuloSeleccionado = null;
+    //    String idArticuloSeleccionado = null;
     String idClienteSeleccionado = null;
-    Boolean modoBuscadorArticulo = false;
     String claveUnicaCabOper = null;
     String nombre;
     TabHost.TabSpec tabDetalle;
@@ -133,34 +139,34 @@ public class Pedidos extends FragmentActivity
     RadioGroup rgMotivoNoCompra;
     String loginUsuario;
     IDao dao;
+    Articulo articuloSeleccionado;
 
-    //    boolean continua;
-    EditText edtTotalPedido;
-    private Location location;
+
+    private Float precioUnitarioUnidad;
+    private Float precioUnitarioBulto;
+    private Button btnOk;
+    private boolean modoBuscadorArticulo;
+    private LinearLayout llFraccuiones;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pedidos);
-        loginUsuario = LoginObservable.getInstancia().getLoginUsuario();
+        loginUsuario = SharedPreferencesManager.getLoginUsuario(Pedidos.this);
 //        if (this.getIntent().hasExtra(USUARIO_KEY))
 //        {
 //            loginUsuario = this.getIntent().getStringExtra(USUARIO_KEY);
 //        }
         Intent intent = this.getIntent();
-        if (intent.hasExtra(CLIENTE_KEY) && intent.hasExtra(NOMBRE_CLIENTE_KEY))
+        if (intent.hasExtra(ID_CLIENTE_SELECCIONADO) && intent.hasExtra(NOMBRE_CLIENTE_KEY))
         {
-            idClienteSeleccionado = intent.getStringExtra(CLIENTE_KEY);
+            idClienteSeleccionado = intent.getStringExtra(ID_CLIENTE_SELECCIONADO);
             nombre = intent.getStringExtra(NOMBRE_CLIENTE_KEY);
             setTitle(idClienteSeleccionado + " - " + nombre);
         }
 
-//        Resources res = getResources();
-//        Bundle bundle = this.getIntent().getExtras();
-//        idClienteSeleccionado = bundle.getString("Cliente");
-
-        final TabHost tabs = (TabHost) findViewById(android.R.id.tabhost);
+        final TabHost tabs = findViewById(android.R.id.tabhost);
         tabs.setup();
 
         tabPedido = tabs.newTabSpec("TabPedido");
@@ -183,35 +189,93 @@ public class Pedidos extends FragmentActivity
         tabDetalle.setIndicator("No Compra");
         tabs.addTab(tabDetalle);
 
-        edtArticulo = (EditText) findViewById(R.id.edtArticulo);
+        edtArticulo = findViewById(R.id.edtArticulo);
+//        edtArticulo.addTextChangedListener(new TextWatcher()
+//        {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after)
+//            {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count)
+//            {
+//                if (s.length() == 7)
+//                {
+//                    buscarArticulo();
+//                }
+//                else if (s.length() == 13)
+//                {
+//                    buscarArticulo();
+//                }
+//                else if (s.length() == 15)
+//                {
+//                    buscarArticulo();
+//                }
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s)
+//            {
+//
+//            }
+//        });
+
+        edtArticulo.setOnKeyListener(new View.OnKeyListener()
+        {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent)
+            {
+                if (keyEvent.getAction() == KeyEvent.ACTION_DOWN)
+                {
+                    Log.d("edtArticulo", String.valueOf(i));
+
+                    switch (i)
+                    {
+                        case KeyEvent.KEYCODE_DPAD_CENTER:
+                        case KeyEvent.KEYCODE_ENTER:
+                            buscarArticulo();
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                return false;
+            }
+        });
+
+        bindUiBultosUnidades();
 
         tabs.setCurrentTab(0);
 
-        spLinea = (Spinner) findViewById(R.id.spLinea);
-        spRubro = (Spinner) findViewById(R.id.spRubro);
-        spArticulo = (Spinner) findViewById(R.id.spArticulo);
+        spLinea = findViewById(R.id.spLinea);
+        spRubro = findViewById(R.id.spRubro);
+        spArticulo = findViewById(R.id.spArticulo);
 
-        edtCodigoArticulo = (EditText) findViewById(R.id.edtCodigoArticulo);
-        btnBuscarCodigoArticulo = (Button) findViewById(R.id.btnBuscarCodigoArticulo);
+        edtCodigoArticulo = findViewById(R.id.edtCodigoArticulo);
+        btnBuscarCodigoArticulo = findViewById(R.id.btnBuscarCodigoArticulo);
 
-        edtUnitario = (EditText) findViewById(R.id.edtUnitario);
-        edtDescuento = (EditText) findViewById(R.id.edtDescuento);
-        edtCantidad = (EditText) findViewById(R.id.edtCantidad);
-        edtFinal = (EditText) findViewById(R.id.edtFinal);
+        edtUnitario = findViewById(R.id.edtUnitario);
+        edtDescuento = findViewById(R.id.edtDescuento);
+//        edtCantidad = (EditText) findViewById(R.id.edtCantidad);
+        edtFinal = findViewById(R.id.edtFinal);
 
         edtBuscadorCodigoOferta = (EditText) findViewById(R.id.edtBuscadorCodigoOferta);
 
         dao = FabricaNegocios.obtenerDao(this);
 
-        edtTotalPedido = (EditText) findViewById(R.id.edtTotalPedido);
+        edtTotalPedido = findViewById(R.id.edtTotalPedido);
 
-        rbCerrado = (RadioButton) findViewById(R.id.rbCerrado);
-        rbNoEstabaElResponsable = (RadioButton) findViewById(R.id.rbNoEstabaElResponsable);
-        rbTieneStock = (RadioButton) findViewById(R.id.rbTieneStock);
-        rbNoTieneDinero = (RadioButton) findViewById(R.id.rbNoTieneDinero);
-        rgMotivoNoCompra = (RadioGroup) findViewById(R.id.rgMotivosNoCompra);
+        btnOk = findViewById(R.id.btnOk);
 
-        btnSeleccionMotivoNoCompra = (Button) findViewById(R.id.btnOkNoCompra);
+        rbCerrado = findViewById(R.id.rbCerrado);
+        rbNoEstabaElResponsable = findViewById(R.id.rbNoEstabaElResponsable);
+        rbTieneStock = findViewById(R.id.rbTieneStock);
+        rbNoTieneDinero = findViewById(R.id.rbNoTieneDinero);
+        rgMotivoNoCompra = findViewById(R.id.rgMotivosNoCompra);
+
+        btnSeleccionMotivoNoCompra = findViewById(R.id.btnOkNoCompra);
         btnSeleccionMotivoNoCompra.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -220,7 +284,7 @@ public class Pedidos extends FragmentActivity
 
                 // Returns an integer which represents the selected radio button's ID
                 int selected = rgMotivoNoCompra.getCheckedRadioButtonId();
-                int motivo = MotivoNoCompra.NO_HAY_DATOS_REGISTRADOS;
+                int motivo;
                 if (selected > -1)
                 {
                     switch (selected)
@@ -262,38 +326,146 @@ public class Pedidos extends FragmentActivity
             }
         });
 
-        controladorPedido = FabricaNegocios.obtenerControladorPedido(getApplicationContext());
-        controladorOferta = FabricaNegocios.obtenerControladorOferta(getApplicationContext());
-        controladorPrecio = FabricaNegocios.obtenerControladorPrecio(getApplicationContext());
-        controladorArticulo = FabricaNegocios.obtenerControladorArticulo(getApplicationContext());
-        controladorStock = FabricaNegocios.obtenerControladorStock(getApplicationContext());
-        controladorPosicionesGPS = FabricaNegocios.obtenerControladorPosicionesGPS(getApplicationContext());
+        controladorPedido = FabricaNegocios.obtenerControladorPedido(Pedidos.this);
+        controladorOferta = FabricaNegocios.obtenerControladorOferta(Pedidos.this);
+        controladorPrecio = FabricaNegocios.obtenerControladorPrecio(Pedidos.this);
+        controladorArticulo = FabricaNegocios.obtenerControladorArticulo(Pedidos.this);
+        controladorStock = FabricaNegocios.obtenerControladorStock(Pedidos.this);
+        controladorPosicionesGPS = FabricaNegocios.obtenerControladorPosicionesGPS(Pedidos.this);
+
+        spLinea();
+
+        spDescuento();
+
+        btnOk();
+
+        lvPedidos();
+
+        seleccionOferta();
+
+        edtBuscadorCodigoOferta();
+
+        btnBuscarCodigoArticulo();
+
+        cargarMotivoNoCompra();
 
         claveUnicaCabOper = controladorPedido.ObtenerClaveUnicaPedido(idClienteSeleccionado, Fecha.obtenerFechaActual());
+        if (claveUnicaCabOper != null)
+        {
+            FabricaMensaje.dialogoAlertaPrecarga(Pedidos.this, "NUEVA PRECARGA", "¿Desea crear una nueva precarga?", new DialogoAlertaSiNo()
+            {
+                @Override
+                public void Positivo()
+                {
+                    claveUnicaCabOper = null;
+                }
 
-        spLinea(this);
+                @Override
+                public void Negativo()
+                {
+                }
+            }).show();
+        }
+//        edtArticulo.requestFocus();
+    }
 
-        edtArticulo(this);
-        btnMas(this);
-        btnMenos(this);
+    private void bindUiBultosUnidades()
+    {
+        edtBultos = findViewById(R.id.etCantidadBultos);
+        llFraccuiones = findViewById(R.id.llFracciones);
+        edtFracciones = findViewById(R.id.etCantidadUnidades);
+        edtBultos.setValueChangedListener(new ValueChangedListener()
+        {
+            @Override
+            public void valueChanged(int value, ActionEnum action)
+            {
+                if (articuloSeleccionado != null)
+                {
+                    if (cant_sc != 0)
+                    {
+                        if (edtBultos.getValue() > cant_sc)
+                        {
+                            Toast.makeText(Pedidos.this, "Esta pidiendo mas sin cargos que los disponibles: " + String.valueOf(cant_sc), Toast.LENGTH_LONG).show();
+                            edtBultos.setValue(cant_sc);
+                        }
+                    }
+                    else
+                    {
+                        edtBultos.setValue(value);
+                    }
+                    calcularPrecioFinal();
+                }
+            }
+        });
+        edtFracciones.setValueChangedListener(new ValueChangedListener()
+        {
+            @Override
+            public void valueChanged(int value, ActionEnum action)
+            {
+                if (articuloSeleccionado != null)
+                {
+                    if (value == articuloSeleccionado.minimoVenta)
+                    {
+                        switch (action)
+                        {
+                            case DECREMENT:
+                                if (edtBultos.getValue() == 0)
+                                {
+                                    FabricaMensaje.dialogoOk(Pedidos.this, "Minimo venta alcanzado", "No puede cargar menos que " + articuloSeleccionado.minimoVenta + ".", new DialogoAlertaNeutral()
+                                    {
+                                        @Override
+                                        public void Neutral()
+                                        {
 
-        edtCantidad(this);
-
-        spDescuento(this);
-
-        btnOk(this);
-
-        lvPedidos(this);
-
-        edtArticulo.requestFocus();
-
-        seleccionOferta(this);
-
-        edtBuscadorCodigoOferta(this);
-
-        btnBuscarCodigoArticulo(this);
-
-        cargarMotivoNoCompra(this);
+                                        }
+                                    });
+                                }
+                                else
+                                {
+                                    edtFracciones.setValue(value);
+                                }
+                                break;
+                            default:
+                                edtFracciones.setValue(value);
+                                break;
+                        }
+                    }
+                    else if (value == articuloSeleccionado.unidadVenta)
+                    {
+                        switch (action)
+                        {
+                            case DECREMENT:
+                                edtFracciones.setValue(value);
+                                break;
+                            default:
+                                edtBultos.increment();
+                                edtFracciones.setValue(0);
+                                break;
+                        }
+                    }
+                    else if (value > articuloSeleccionado.unidadVenta)
+                    {
+//                        edtFracciones.setValue(articuloSeleccionado.minimoVenta);
+                        switch (action)
+                        {
+                            case MANUAL:
+                                int cantidadBultos = value / articuloSeleccionado.unidadVenta;
+                                int cantidadFraccion = value % articuloSeleccionado.unidadVenta;
+                                edtBultos.setValue(cantidadBultos);
+                                edtFracciones.setValue(cantidadFraccion);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        edtFracciones.setValue(value);
+                    }
+                    calcularPrecioFinal();
+                }
+            }
+        });
     }
 
     private void enviarPosicion(PosicionesGPS posicionesGPS)
@@ -303,25 +475,21 @@ public class Pedidos extends FragmentActivity
         this.startService(mServiceIntent);
     }
 
-    private void cargarMotivoNoCompra(Context context)
+    private void cargarMotivoNoCompra()
     {
         int motivo = controladorPosicionesGPS.obtenerMotivoNoCompra(idClienteSeleccionado, Fecha.obtenerFechaActual().toString());
         switch (motivo)
         {
             case 1:
-//                rbCerrado.setSelected(true);
                 rgMotivoNoCompra.check(R.id.rbCerrado);
                 break;
             case 2:
-//                rbNoEstabaElResponsable.setSelected(true);
                 rgMotivoNoCompra.check(R.id.rbNoEstabaElResponsable);
                 break;
             case 3:
-//                rbTieneStock.setSelected(true);
                 rgMotivoNoCompra.check(R.id.rbTieneStock);
                 break;
             case 4:
-//                rbNoTieneDinero.setSelected(true);
                 rgMotivoNoCompra.check(R.id.rbNoTieneDinero);
                 break;
             default:
@@ -329,7 +497,7 @@ public class Pedidos extends FragmentActivity
         }
     }
 
-    private void btnBuscarCodigoArticulo(final Context context)
+    private void btnBuscarCodigoArticulo()
     {
 
         btnBuscarCodigoArticulo.setOnClickListener(new View.OnClickListener()
@@ -337,13 +505,18 @@ public class Pedidos extends FragmentActivity
             @Override
             public void onClick(View v)
             {
-                buscarArticulo(context, true);
+                if (edtArticulo.getText().toString().isEmpty())
+                {
+                    Intent intent = new Intent(Pedidos.this, BuscarArticulo.class);
+                    startActivityForResult(intent, CONSTANTES.INTENT_BUSCAR_ARTICULO);
+                }
+                buscarArticulo();
             }
         });
 
     }
 
-    private void edtBuscadorCodigoOferta(final Pedidos pedidos)
+    private void edtBuscadorCodigoOferta()
     {
 
         edtBuscadorCodigoOferta.addTextChangedListener(new TextWatcher()
@@ -357,34 +530,34 @@ public class Pedidos extends FragmentActivity
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count)
             {
-                String codigo = edtBuscadorCodigoOferta.getText().toString();
-
-                if (codigo.isEmpty())
-                {
-                    codigo = "0";
-                }
-
-                String codigoABuscar = String.format("%08d", Integer.valueOf(codigo));
-
-                boolean existeOferta = controladorOferta.buscarOfertaPorCodigo(codigoABuscar);
-
-                if (existeOferta)
-                {
-
-                    String codigoItemLista;
-                    // Busco en la array la posicion con el codigo de oferta
-                    int i;
-                    for (i = 0; i < listaOferEsp.size(); i++)
-                    {
-
-                        codigoItemLista = listaOferEsp.get(i).getCodigo();
-                        if (codigoItemLista.equals(codigoABuscar))
-                        {
-                            lvOfertas.setSelection(i);
-                            break;
-                        }
-                    }
-                }
+//                String codigo = edtBuscadorCodigoOferta.getText().toString();
+//
+//                if (codigo.isEmpty())
+//                {
+//                    codigo = "0";
+//                }
+//
+//                String codigoABuscar = String.format("%08d", Integer.valueOf(codigo));
+//
+//                boolean existeOferta = controladorOferta.buscarOfertaPorCodigo(codigoABuscar);
+//
+//                if (existeOferta)
+//                {
+//
+//                    String codigoItemLista;
+//                    // Busco en la array la posicion con el codigo de oferta
+//                    int i;
+//                    for (i = 0; i < listaOferEsp.size(); i++)
+//                    {
+//
+//                        codigoItemLista = listaOferEsp.get(i).getCodigo();
+//                        if (codigoItemLista.equals(codigoABuscar))
+//                        {
+//                            lvOfertas.setSelection(i);
+//                            break;
+//                        }
+//                    }
+//                }
 
             }
 
@@ -397,11 +570,10 @@ public class Pedidos extends FragmentActivity
 
     }
 
-
-    private void seleccionOferta(final Context context)
+    private void seleccionOferta()
     {
         listaOferEsp = controladorOferta.obtenerOfertas(idClienteSeleccionado);
-        lvOfertas = (ListView) findViewById(R.id.lvOferta);
+        lvOfertas = findViewById(R.id.lvOferta);
 
         lvOfertas.setAdapter(new AdaptadorListaGenerico(this, R.layout.activity_lista_oferta, listaOferEsp)
         {
@@ -409,8 +581,8 @@ public class Pedidos extends FragmentActivity
             public void onEntrada(Object entrada, View view)
             {
 
-                TextView tvCodigoOferta = (TextView) view.findViewById(R.id.tvCodigoOferta);
-                TextView tvNombreOferta = (TextView) view.findViewById(R.id.tvNombreOferta);
+                TextView tvCodigoOferta = view.findViewById(R.id.tvCodigoOferta);
+                TextView tvNombreOferta = view.findViewById(R.id.tvNombreOferta);
 
                 String codigoArticulo = ((OferEsp) entrada).getCodigo();
                 tvCodigoOferta.setText(codigoArticulo);
@@ -428,7 +600,7 @@ public class Pedidos extends FragmentActivity
 
                 final OferEsp elegido = (OferEsp) adapterView.getItemAtPosition(i);
 
-                Intent intentOferta = new Intent(getApplicationContext(), Oferta.class);
+                Intent intentOferta = new Intent(Pedidos.this, Oferta.class);
                 intentOferta.putExtra(CODIGO_OFERTA, elegido.Codigo);
                 intentOferta.putExtra(ID_CLIENTE_SELECCIONADO, idClienteSeleccionado);
                 intentOferta.putExtra(CLAVE_UNICA_CABOPER, claveUnicaCabOper);
@@ -441,124 +613,109 @@ public class Pedidos extends FragmentActivity
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-
-        if (requestCode == INTENT_CONVENIO)
+        switch (requestCode)
         {
-            if (data != null)
-            {
-                tipoConvenio = data.getStringExtra("tipo");
-                detalleTipoConvenio = data.getStringExtra("detalletipo");
-                descuentoConvenio = data.getFloatExtra("descuento", 0);
-                claveUnicaCabOper = data.getStringExtra(CLAVE_UNICA_CABOPER);
-
-                edtDescuento.setText(String.valueOf(descuentoConvenio));
-
-                calcularPrecioFinal();
-
-            }
-        }
-        else
-        {
-            if (requestCode == INTENT_OFERTA)
-            {
-                lvPedidos(getApplicationContext());
-            }
-            else
-            {
-                if (requestCode == 115)
+            case INTENT_CONVENIO:
+                if (data != null)
                 {
+                    tipoConvenio = data.getStringExtra("tipo");
+                    detalleTipoConvenio = data.getStringExtra("detalletipo");
+                    descuentoConvenio = data.getFloatExtra("descuento", 0);
+                    claveUnicaCabOper = data.getStringExtra(CLAVE_UNICA_CABOPER);
+                    edtDescuento.setText(String.format("%.2f", descuentoConvenio));
+                    calcularPrecioFinal();
+                }
+                break;
+            case INTENT_OFERTA:
+                lvPedidos();
+                break;
+            case INTENT_TAKE_PICTURE:
+                ImageView iv = findViewById(R.id.ivCliente);
+                iv.setImageBitmap(BitmapFactory.decodeFile(foto));
 
-                    ImageView iv = (ImageView) findViewById(R.id.ivCliente);
-                    iv.setImageBitmap(BitmapFactory.decodeFile(foto));
-
-                    File file = new File(foto);
-                    if (file.exists())
+                File file = new File(foto);
+                if (file.exists())
+                {
+                    String base64 = ConvertirFotoABase64.convertir(Pedidos.this, output);
+                    WebServiceHelper webServiceHelper = new WebServiceHelper();
+                    //Subir foto Cliente
+                    webServiceHelper.addService("http://www.inteldevmobile.com.ar", "SubirFotoCliente", "http://mhergo.ddns.net:8888/inteldevwebservice/Service.asmx?WSDL", "http://www.inteldevmobile.com.ar/SubirFotoCliente", "SubirFotoCliente", 2000);
+                    webServiceHelper.addMethodParameter("SubirFotoCliente", "usuario", loginUsuario);
+                    webServiceHelper.addMethodParameter("SubirFotoCliente", "cliente", idClienteSeleccionado);
+                    webServiceHelper.addMethodParameter("SubirFotoCliente", "foto", base64);
+                    SoapObject respuesta = webServiceHelper.executeService("SubirFotoCliente");
+                    Toast.makeText(Pedidos.this, respuesta.getProperty(0).toString(), Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    Toast.makeText(Pedidos.this, "No se ha realizado la foto", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case INTENT_BUSCAR_ARTICULO:
+                if (resultCode == RESULT_OK)
+                {
+                    if (data != null)
                     {
-
-                        String base64 = ConvertirFotoABase64.convertir(getApplicationContext(), output);
-
-                        WebServiceHelper webServiceHelper = new WebServiceHelper();
-                        //Subir foto Cliente
-                        webServiceHelper.addService("http://www.inteldevmobile.com.ar", "SubirFotoCliente", "http://mhergo.ddns.net:8888/inteldevwebservice/Service.asmx?WSDL", "http://www.inteldevmobile.com.ar/SubirFotoCliente", "SubirFotoCliente", 0);
-//                        webServiceHelper.addService("http://www.inteldevmobile.com.ar", "SubirFotoCliente", "http://192.168.1.99:8888/inteldevwebservice/Service.asmx?WSDL", "http://www.inteldevmobile.com.ar/SubirFotoCliente", "SubirFotoCliente", 0);
-
-                        webServiceHelper.addMethodParameter("SubirFotoCliente", "usuario", loginUsuario);
-                        webServiceHelper.addMethodParameter("SubirFotoCliente", "cliente", idClienteSeleccionado);
-                        webServiceHelper.addMethodParameter("SubirFotoCliente", "foto", base64);
-
-                        SoapObject respuesta = webServiceHelper.executeService("SubirFotoCliente");
-                        Toast.makeText(getApplicationContext(), respuesta.getProperty(0).toString(), Toast.LENGTH_SHORT).show();
-                    }
-                    else
-                    {
-                        Toast.makeText(getApplicationContext(), "No se ha realizado la foto", Toast.LENGTH_SHORT).show();
+                        articuloSeleccionado = data.getParcelableExtra(ARTICULO_SELECCIONADO);
+                        seleccionArticulo();
                     }
                 }
-            }
+                break;
+            default:
+                break;
         }
     }
 
-    private void spDescuento(Pedidos pedidos)
+
+    private void spDescuento()
     {
-        Button btnDescuento = (Button) findViewById(R.id.btnDescuento);
+        Button btnDescuento = findViewById(R.id.btnDescuento);
         btnDescuento.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view)
             {
 
-                Intent intentConvenio = new Intent(getApplicationContext(), Convenio.class);
+                Intent intentConvenio = new Intent(Pedidos.this, Convenio.class);
                 startActivityForResult(intentConvenio, CONSTANTES.INTENT_CONVENIO);
             }
         });
 
     }
 
-    private void lvPedidos(final Context context)
+    private void lvPedidos()
     {
-
         ArrayList<DetallePedido> listadetallePedido = new ArrayList<DetallePedido>();
-
-        final DetallePedido detallePedido;
-
-        final Dao dao = new Dao(context);
-
+        final Dao dao = new Dao(Pedidos.this);
         Cursor cursor = consultarPedidos();
-
         calcularTotal(cursor);
-
         if (cursor != null && cursor.moveToFirst())
         {
             Mapeador<DetallePedido> detallePedidoMapeador = new Mapeador<DetallePedido>(new DetallePedido());
-
-//            listadetallePedido = detallePedidoMapeador.cursorToList(cursor);
             listadetallePedido = detallePedidoMapeador.cursorToList(cursor);
         }
-
-        final ListView lvPedidos = (ListView) findViewById(R.id.lvPedidos);
-
+        final ListView lvPedidos = findViewById(R.id.lvPedidos);
         lvPedidos.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
-
-        lvPedidos.setAdapter(new AdaptadorListaGenerico(this, R.layout.activity_lista_pedido, listadetallePedido)
+        lvPedidos.setAdapter(new AdaptadorListaGenerico(this, R.layout.activity_lista_pedido_mayorista, listadetallePedido)
         {
             @Override
             public void onEntrada(Object entrada, View view)
             {
+                TextView tvCodigoArticulo = view.findViewById(R.id.tvCodigoArticulo);
+                TextView tvArticulo = view.findViewById(R.id.tvArticulo);
+                TextView tvCantidadBultos = view.findViewById(R.id.tvCantidadBultos);
+                TextView tvCantidadFraccion = view.findViewById(R.id.tvCantidadFraccion);
+                TextView tvDescuento = view.findViewById(R.id.tvDescuento);
+                TextView tvFinal = view.findViewById(R.id.tvFinal);
+                TextView tvEtiquetaDescuento = view.findViewById(R.id.tvEtiquetaDescuento);
+                TextView tvEtiquetaFraccion = view.findViewById(R.id.tvEtiquetaFraccion);
 
-                TextView tvCodigoArticulo = (TextView) view.findViewById(R.id.tvCodigoArticulo);
-                TextView tvArticulo = (TextView) view.findViewById(R.id.tvArticulo);
-                TextView tvCantidad = (TextView) view.findViewById(R.id.tvCantidad);
-                TextView tvPrecio = (TextView) view.findViewById(R.id.tvPrecio);
-                TextView tvDescuento = (TextView) view.findViewById(R.id.tvDescuento);
-                TextView tvFinal = (TextView) view.findViewById(R.id.tvFinal);
-
-                TextView tvEtiquetaDescuento = (TextView) view.findViewById(R.id.tvEtiquetaDescuento);
-
-                Float precio = 0f;
-
+                Float precio;
+                int cantidad;
+                int bultos;
+                int fraccion;
                 if (((DetallePedido) entrada).getOferta() == null)
                 {
-
                     String codigoArticulo = ((DetallePedido) entrada).getIdArticulo();
                     String claveUnica = ((DetallePedido) entrada).getIdFila();
 
@@ -579,40 +736,62 @@ public class Pedidos extends FragmentActivity
                     Articulo articulo = controladorArticulo.buscarArticuloPorCodigo(codigoArticulo);
                     tvArticulo.setText(articulo.nombre); //CATCH EXCEPCION POR NULL O VUELA!!
 
-                    tvEtiquetaDescuento.setVisibility(View.VISIBLE);
-                    tvDescuento.setVisibility(View.VISIBLE);
-
+                    bultos = ((DetallePedido) entrada).getEntero();
+                    fraccion = ((DetallePedido) entrada).getFraccion();
+                    cantidad = bultos * articulo.unidadVenta + fraccion;
                     precio = ((DetallePedido) entrada).getPrecio();
+
+                    tvCantidadBultos.setText(String.valueOf(bultos));
+
+                    if (fraccion > 0)
+                    {
+                        tvCantidadFraccion.setVisibility(VISIBLE);
+                        tvEtiquetaFraccion.setVisibility(VISIBLE);
+                        tvCantidadFraccion.setText(String.valueOf(fraccion));
+                    }
+                    else
+                    {
+                        tvEtiquetaFraccion.setVisibility(GONE);
+                        tvCantidadFraccion.setVisibility(GONE);
+                    }
                 }
                 else
                 {
                     String codigoOferta = ((DetallePedido) entrada).getOferta();
-                    tvCodigoArticulo.setText("OFERTA " + codigoOferta);
+                    tvCodigoArticulo.setText(String.format("OFERTA %s", codigoOferta));
 
                     OferEsp oferEsp = controladorOferta.obtenerOfertaPorCodigo(codigoOferta);
                     tvArticulo.setText(oferEsp.Nombre);
 
-                    tvEtiquetaDescuento.setVisibility(View.INVISIBLE);
-                    tvDescuento.setVisibility(View.INVISIBLE);
+                    tvEtiquetaDescuento.setVisibility(GONE);
+                    tvDescuento.setVisibility(GONE);
+                    tvEtiquetaFraccion.setVisibility(GONE);
+                    tvCantidadFraccion.setVisibility(GONE);
 
                     precio = ((DetallePedido) entrada).getPrecio() / ((DetallePedido) entrada).getEntero();
+                    cantidad = ((DetallePedido) entrada).getEntero();
 
+                    tvCantidadBultos.setText(String.valueOf(cantidad));
                 }
-
-                int cantidad = ((DetallePedido) entrada).getEntero();
-                tvCantidad.setText(String.valueOf(cantidad));
-
-                tvPrecio.setText(String.valueOf(precio));
 
                 float total = 0;
                 float descuento = ((DetallePedido) entrada).getDescuento();
-                tvDescuento.setText(String.valueOf(descuento));
-
+                if (descuento > 0)
+                {
+                    tvEtiquetaDescuento.setVisibility(VISIBLE);
+                    tvDescuento.setVisibility(VISIBLE);
+                    tvDescuento.setText(String.format("%.2f", descuento));
+                }
+                else
+                {
+                    tvEtiquetaDescuento.setVisibility(GONE);
+                    tvDescuento.setVisibility(GONE);
+                }
                 if (descuento < 100)
                 {
                     total = (precio - ((precio * descuento) / 100)) * cantidad;
                 }
-                tvFinal.setText(String.valueOf(total));
+                tvFinal.setText(String.format("%.2f", total));
             }
         });
 
@@ -633,15 +812,15 @@ public class Pedidos extends FragmentActivity
 
                         if (elegido.getOferta() == null)
                         {
-                            dao.delete("detOper", "idFila='" + elegido.getIdFila() + "'");
+                            dao.delete("detOper", "idFila=?", new String[]{elegido.getIdFila()});
                         }
                         else
                         {
                             String idFila = elegido.getIdFila();
-                            dao.delete("detOper", "idFila='" + elegido.idFila + "'");
-                            dao.delete("oferOper", "claveUnica='" + idFila + "'");
+                            dao.delete("detOper", "idFila=?", new String[]{elegido.idFila});
+                            dao.delete("oferOper", "claveUnica=?", new String[]{idFila});
                         }
-                        lvPedidos(context);
+                        lvPedidos();
                     }
 
                     @Override
@@ -665,8 +844,7 @@ public class Pedidos extends FragmentActivity
 
                 if (elegido.getOferta() != null)
                 {
-
-                    Intent intentDetalle_Oferta = new Intent(getApplicationContext(), Detalle_Oferta.class);
+                    Intent intentDetalle_Oferta = new Intent(Pedidos.this, Detalle_Oferta.class);
                     intentDetalle_Oferta.putExtra("claveUnica", elegido.getIdFila());
                     startActivity(intentDetalle_Oferta);
                 }
@@ -677,59 +855,59 @@ public class Pedidos extends FragmentActivity
 
     private Cursor consultarPedidos()
     {
-
-        return dao.ejecutarConsultaSql("select cabOper.idCliente," + "cabOper.fecha, " + "detOper.idArticulo," + "detOper.entero," + "detOper.precio," + "detOper.descuento," + "detOper.idFila," + "detOper.oferta," + "detOper.claveUnica " + "  from cabOper" + " inner join detOper on detOper.claveUnica = cabOper.claveUnica " + " where cabOper.idCliente = '" + idClienteSeleccionado + "'" + "  and cabOper.fecha = '" + Fecha.obtenerFechaActual().toString() + "'");
+        return dao.ejecutarConsultaSql("select cabOper.idCliente, cabOper.fecha, detOper.idArticulo, detOper.entero, detOper.fraccion, detOper.precio, detOper.descuento, detOper.idFila, detOper.oferta, detOper.claveUnica, detOper.unidadVenta from cabOper inner join detOper on detOper.claveUnica = cabOper.claveUnica where cabOper.idCliente = '" + idClienteSeleccionado + "' and cabOper.fecha = '" + Fecha.obtenerFechaActual().toString() + "'");
     }
 
+    /*
+       select cabOper.idCliente
+       cabOper.fecha
+       detOper.idArticulo
+       detOper.entero
+       detOper.fraccion
+       detOper.precio
+       detOper.descuento
+       detOper.idFila
+       detOper.oferta
+       detOper.claveUnica
+       detOper.unidadVenta
+       from cabOper
+       inner join detOper on detOper.claveUnica = cabOper.claveUnica
+       where cabOper.idCliente = 'idClienteSeleccionado' and
+       cabOper.fecha = Fecha.obtenerFechaActual()
+    */
     private void calcularTotal(Cursor cursor)
     {
         float total = 0f;
-
         if (cursor != null && cursor.moveToFirst())
         {
-
             do
             {
-                float precio = cursor.getFloat(4);
-                int cantidad = cursor.getInt(3);
-                float descuento = cursor.getFloat(5);
-
+                float precio = cursor.getFloat(5);
+                int bultos = cursor.getInt(3);
+                int fracciones = cursor.getInt(4);
+                int unidadVenta = cursor.getInt(10);
+                int cantidad = bultos * unidadVenta + fracciones;
+                float descuento = cursor.getFloat(6);
                 float importeDescuento = precio * (descuento / 100);
                 total = total + ((precio - importeDescuento) * cantidad);
-
-
             } while (cursor.moveToNext());
         }
 
-        edtTotalPedido.setText(String.valueOf(total));
+        edtTotalPedido.setText(String.format("%.2f", total));
     }
 
-    private void btnOk(final Context context)
+    private void btnOk()
     {
-
-        Button btnOk = (Button) findViewById(R.id.btnOk);
         btnOk.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view)
             {
-
-                if (edtCantidad.getText().toString().equals("0") || edtCantidad.getText().toString().isEmpty())
+                if (articuloSeleccionado != null)
                 {
-                    FabricaMensaje.dialogoOk(context, "Faltan Datos".toUpperCase(), "No indicó la cantidad.", new DialogoAlertaNeutral()
+                    if (edtBultos.getValue() == 0 && edtFracciones.getValue() == 0)
                     {
-                        @Override
-                        public void Neutral()
-                        {
-
-                        }
-                    }).show();
-                }
-                else
-                {
-                    if (!controladorStock.hayStock(idArticuloSeleccionado))
-                    {
-                        FabricaMensaje.dialogoOk(context, "alerta".toUpperCase(), "No hay stock.", new DialogoAlertaNeutral()
+                        FabricaMensaje.dialogoOk(Pedidos.this, "Faltan Datos".toUpperCase(), "No indicó la cantidad.", new DialogoAlertaNeutral()
                         {
                             @Override
                             public void Neutral()
@@ -737,114 +915,138 @@ public class Pedidos extends FragmentActivity
 
                             }
                         }).show();
-
                     }
                     else
                     {
-                        //GRABAMOS EL PEDIDO
-                        String claveUnica;
-
-                        CabOper cabOper = new CabOper();
-
-                        if (claveUnicaCabOper == null)
+                        if (!controladorStock.hayStock(articuloSeleccionado.idArticulo))
                         {
-                            claveUnica = java.util.UUID.randomUUID().toString();
-                            claveUnicaCabOper = claveUnica;
-
-                            cabOper.claveUnica = claveUnica;
-
-                            cabOper.idOperacion = 1;
-                            cabOper.idCliente = idClienteSeleccionado;
-
-                            java.sql.Date sqlDate = Fecha.sumarFechasDias(Fecha.obtenerFechaActual(), 0);
-
-                            cabOper.fecha = sqlDate;
-                            cabOper.fechaEntrega = sqlDate;
-                            cabOper.idVendedor = loginUsuario;
-                            cabOper.enviado = 0;
-
-                            cabOper.domicilio = "";
-
-                            Mapeador<CabOper> cabOperMapeador = new Mapeador<CabOper>(cabOper);
-                            ContentValues contentValues = cabOperMapeador.entityToContentValues();
-                            dao.insert("cabOper", contentValues);
-
-                        }
-                        else
-                        {
-                            claveUnica = claveUnicaCabOper;
-                        }
-
-                        DetOper detOper = new DetOper();
-                        detOper.claveUnica = claveUnica;
-                        if (descuentoConvenio == 0)
-                        {
-                            detOper.idArticulo = idArticuloSeleccionado;
-                        }
-                        else
-                        {
-                            detOper.idArticulo = "CONV " + idClienteSeleccionado;
-                        }
-
-                        detOper.descuento = Float.valueOf(edtDescuento.getText().toString());
-                        detOper.entero = Integer.valueOf(edtCantidad.getText().toString());
-                        detOper.precio = Float.valueOf(edtUnitario.getText().toString());
-                        detOper.idFila = java.util.UUID.randomUUID().toString();
-
-                        if (cant_sc != 0)
-                        {
-                            detOper.sincargo = 1;
-                        }
-
-                        Mapeador<DetOper> detOperMapeador = new Mapeador<DetOper>(detOper);
-                        ContentValues contentValuesdetOper = detOperMapeador.entityToContentValues();
-
-                        dao.insert("detOper", contentValuesdetOper);
-
-                        if (descuentoConvenio != 0)
-                        {
-                            OferOper oferOper = new OferOper();
-                            oferOper.claveUnica = detOper.idFila;
-                            oferOper.idArticulo = idArticuloSeleccionado;
-                            oferOper.precio = detOper.precio;
-                            oferOper.cantidad = detOper.entero;
-                            oferOper.descuento = detOper.descuento;
-                            oferOper.enviado = 0;
-                            oferOper.idFila = java.util.UUID.randomUUID().toString();
-
-                            if (detalleTipoConvenio != null && detalleTipoConvenio.isEmpty())
+                            FabricaMensaje.dialogoOk(Pedidos.this, "alerta".toUpperCase(), "No hay stock.", new DialogoAlertaNeutral()
                             {
-                                oferOper.tipo = tipoConvenio;
+                                @Override
+                                public void Neutral()
+                                {
+
+                                }
+                            }).show();
+
+                        }
+                        else
+                        {
+                            //GRABAMOS EL PEDIDO
+                            String claveUnica;
+                            CabOper cabOper = new CabOper();
+                            if (claveUnicaCabOper == null)
+                            {
+                                claveUnica = java.util.UUID.randomUUID().toString();
+                                claveUnicaCabOper = claveUnica;
+
+                                cabOper.claveUnica = claveUnica;
+
+                                cabOper.idOperacion = 1;
+                                cabOper.idCliente = idClienteSeleccionado;
+
+                                java.sql.Date sqlDate = Fecha.sumarFechasDias(Fecha.obtenerFechaActual(), 0);
+
+                                cabOper.fecha = sqlDate;
+                                cabOper.fechaEntrega = sqlDate;
+                                cabOper.idVendedor = loginUsuario;
+                                cabOper.enviado = 0;
+
+                                cabOper.domicilio = "";
+
+                                Mapeador<CabOper> cabOperMapeador = new Mapeador<CabOper>(cabOper);
+                                ContentValues contentValues = cabOperMapeador.entityToContentValues();
+                                dao.insert("cabOper", contentValues);
+
                             }
                             else
                             {
-                                oferOper.tipo = detalleTipoConvenio;
+                                claveUnica = claveUnicaCabOper;
                             }
 
-                            Mapeador<OferOper> oferOperMapeador = new Mapeador<OferOper>(oferOper);
-                            ContentValues contentValuesOferOper = oferOperMapeador.entityToContentValues();
-                            dao.insert("oferOper", contentValuesOferOper);
+                            DetOper detOper = new DetOper();
+                            detOper.claveUnica = claveUnica;
+                            if (descuentoConvenio == 0)
+                            {
+                                detOper.idArticulo = articuloSeleccionado.idArticulo;
+                            }
+                            else
+                            {
+                                detOper.idArticulo = "CONV " + idClienteSeleccionado;
+                            }
+                            detOper.unidadVenta = articuloSeleccionado.unidadVenta;
+                            detOper.descuento = Float.valueOf(edtDescuento.getText().toString());
+                            detOper.entero = edtBultos.getValue();
+                            detOper.fraccion = edtFracciones.getValue();
+                            detOper.precio = Float.valueOf(edtUnitario.getText().toString());
+                            detOper.idFila = java.util.UUID.randomUUID().toString();
+
+                            if (cant_sc != 0)
+                            {
+                                detOper.sincargo = 1;
+                            }
+
+                            Mapeador<DetOper> detOperMapeador = new Mapeador<DetOper>(detOper);
+                            ContentValues contentValuesdetOper = detOperMapeador.entityToContentValues();
+
+                            dao.insert("detOper", contentValuesdetOper);
+
+                            if (descuentoConvenio != 0)
+                            {
+                                OferOper oferOper = new OferOper();
+                                oferOper.claveUnica = detOper.idFila;
+                                oferOper.idArticulo = articuloSeleccionado.idArticulo;
+                                oferOper.precio = detOper.precio;
+                                oferOper.cantidad = detOper.entero;
+                                oferOper.descuento = detOper.descuento;
+                                oferOper.enviado = 0;
+                                oferOper.idFila = java.util.UUID.randomUUID().toString();
+
+                                if (detalleTipoConvenio != null && detalleTipoConvenio.isEmpty())
+                                {
+                                    oferOper.tipo = tipoConvenio;
+                                }
+                                else
+                                {
+                                    oferOper.tipo = detalleTipoConvenio;
+                                }
+
+                                Mapeador<OferOper> oferOperMapeador = new Mapeador<OferOper>(oferOper);
+                                ContentValues contentValuesOferOper = oferOperMapeador.entityToContentValues();
+                                dao.insert("oferOper", contentValuesOferOper);
+                            }
+
+                            lvPedidos();
+
+                            edtBultos.setValue(0);
+                            edtFracciones.setValue(0);
+                            edtDescuento.setText(String.format("%.2f", 0.00));
+                            descuentoConvenio = 0;
+                            tipoConvenio = "";
+                            detalleTipoConvenio = "";
+                            edtFinal.setText(String.format("%.2f", 0.00));
+                            edtArticulo.setText("");
+//                            edtArticulo.requestFocus();
                         }
-
-                        lvPedidos(context);
-
-                        edtCantidad.setText("0");
-                        edtDescuento.setText("0.0");
-                        descuentoConvenio = 0;
-                        tipoConvenio = "";
-                        detalleTipoConvenio = "";
-                        edtFinal.setText("0.0");
-                        edtArticulo.setText("");
-                        edtArticulo.requestFocus();
                     }
+                }
+                else
+                {
+                    FabricaMensaje.dialogoOk(Pedidos.this, "FALTAN DATOS", "No especificó un artículo", new DialogoAlertaNeutral()
+                    {
+                        @Override
+                        public void Neutral()
+                        {
+//                            edtArticulo.requestFocus();
+                        }
+                    });
                 }
             }
         });
-
     }
 
 
-    private void spLinea(final Context context)
+    private void spLinea()
     {
         Linea linea = new Linea();
 
@@ -852,7 +1054,7 @@ public class Pedidos extends FragmentActivity
 
         String consulta = "select rowid as _id, nombre from lineas order by nombre ";
 
-        SpinnerManager<Linea> llenarLinea = new SpinnerManager<Linea>(linea, context, spLinea);
+        SpinnerManager<Linea> llenarLinea = new SpinnerManager<Linea>(linea, Pedidos.this, spLinea);
         llenarLinea.llenarDesdeCursor(consulta, "nombre");
 
 
@@ -861,15 +1063,13 @@ public class Pedidos extends FragmentActivity
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l)
             {
-
                 if (!modoBuscadorArticulo)
                 {
                     if (primerSeleccion)
                     {
-
                         Linea lineaSeleccionada = controladorArticulo.buscarLineaPorRowId(l);
                         idLineaSeleccionada = lineaSeleccionada.idLinea; // String.format("%03d", l);
-                        spRubro(context);
+                        spRubro();
                     }
                     else
                     {
@@ -883,40 +1083,26 @@ public class Pedidos extends FragmentActivity
             {
             }
         });
-
-        spLinea.setOnTouchListener(new View.OnTouchListener()
-        {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent)
-            {
-                modoBuscadorArticulo = false;
-                return false;
-            }
-        });
     }
 
-    private void spRubro(final Context context)
+    private void spRubro()
     {
         Rubro rubro = new Rubro();
 
         String consulta = "SELECT distinct rubros.rowid  as _id, rubros.nombre from rubros join articulos as art on art.idrubro = rubros.idrubro where art.idLinea = '" + idLineaSeleccionada + "'";
 
-        SpinnerManager<Rubro> llenarRubro = new SpinnerManager<Rubro>(rubro, context, spRubro);
+        SpinnerManager<Rubro> llenarRubro = new SpinnerManager<Rubro>(rubro, Pedidos.this, spRubro);
         llenarRubro.llenarDesdeCursor(consulta, "nombre");
-        Boolean noentres;
         spRubro.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
         {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l)
             {
-
                 if (!modoBuscadorArticulo)
                 {
-
                     Rubro rubroSeleccionado = controladorArticulo.buscarRubroPorRowId(l);
-
                     idRubroSeleccionado = rubroSeleccionado.idRubro; // String.format("%03d", l);
-                    spArticulo(context);
+                    spArticulo();
                 }
             }
 
@@ -925,60 +1111,52 @@ public class Pedidos extends FragmentActivity
             {
             }
         });
-
-        spRubro.setOnTouchListener(new View.OnTouchListener()
-        {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent)
-            {
-                modoBuscadorArticulo = false;
-                return false;
-            }
-        });
     }
 
-    private void spArticulo(final Context context)
+    private void spArticulo()
     {
-        Articulo articulo = new Articulo();
+        final Articulo articulo = new Articulo();
 
         String consulta = "select rowid as _id,nombre from articulos where idlinea = '" + idLineaSeleccionada + "' and idRubro = '" + idRubroSeleccionado + "' order by nombre ";
 
-        SpinnerManager<Articulo> llenarArticulo = new SpinnerManager<Articulo>(articulo, context, spArticulo);
+        SpinnerManager<Articulo> llenarArticulo = new SpinnerManager<Articulo>(articulo, Pedidos.this, spArticulo);
         llenarArticulo.llenarDesdeCursor(consulta, "nombre");
         spArticulo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
         {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l)
             {
-
-                idArticuloSeleccionado = controladorArticulo.buscarArticuloPorRowId(l).idArticulo;
-                edtCodigoArticulo.setText(idArticuloSeleccionado);
+                edtBultos.setValue(0);
+                edtFracciones.setValue(0);
+                edtDescuento.setText(String.format("%.2f", 0.00));
+                descuentoConvenio = 0;
+                tipoConvenio = "";
+                detalleTipoConvenio = "";
+                edtFinal.setText(String.format("%.2f", 0.00));
+                articuloSeleccionado = controladorArticulo.buscarArticuloPorRowId(l);
+                edtCodigoArticulo.setText(articuloSeleccionado.idArticulo);
 
                 cant_sc = 0;
 
-                Float unitario = controladorPrecio.obtener(context, idClienteSeleccionado, idArticuloSeleccionado);
+                precioUnitarioBulto = controladorPrecio.obtener(Pedidos.this, articuloSeleccionado.idArticulo, idClienteSeleccionado);
+                precioUnitarioUnidad = precioUnitarioBulto / articuloSeleccionado.unidadVenta;
+                edtUnitario.setText(String.format("%.2f", precioUnitarioUnidad));
+                edtDescuento.setText(String.format("%.2f", 0.00));
 
-                EditText edUnitario = (EditText) findViewById(R.id.edtUnitario);
-                edUnitario.setText(unitario.toString());
+                ControladorConvenio controladorConvenio = FabricaNegocios.obtenerControladorConvenio(Pedidos.this, idClienteSeleccionado);
 
-                edtDescuento.setText((String.valueOf(0)));
+                final DetBonif detBonif = controladorConvenio.obtenerPorcentaje(articuloSeleccionado.idArticulo, false);
+                edtDescuento.setText(String.format("%.2f", detBonif.porcentaje));
 
-                ControladorConvenio controladorConvenio = FabricaNegocios.obtenerControladorConvenio(context, idClienteSeleccionado);
-
-                final DetBonif detBonif = controladorConvenio.obtenerPorcentaje(idArticuloSeleccionado, false);
-                edtDescuento.setText((String.valueOf(detBonif.porcentaje)));
-
-                final DetBonif detBonifSinCargos = controladorConvenio.obtenerPorcentaje(idArticuloSeleccionado, true);
-
+                final DetBonif detBonifSinCargos = controladorConvenio.obtenerPorcentaje(articuloSeleccionado.idArticulo, true);
 
                 java.sql.Date sqlDate = Fecha.sumarFechasDias(Fecha.obtenerFechaActual(), 0);
-                int sinCargosUtilizados = controladorConvenio.obtenerSinCargosUtilizados(sqlDate, idArticuloSeleccionado);
+                int sinCargosUtilizados = controladorConvenio.obtenerSinCargosUtilizados(sqlDate, articuloSeleccionado.idArticulo);
                 final int sinCargosDisponibles = detBonifSinCargos.cant_sc - sinCargosUtilizados;
 
                 if (sinCargosDisponibles > 0)
                 {
-
-                    FabricaMensaje.dialogoAlertaSiNo(context, "Tiene " + sinCargosDisponibles + " disponibles", "¿Pide sin cargos?", new DialogoAlertaSiNo()
+                    FabricaMensaje.dialogoAlertaSiNo(Pedidos.this, "Tiene " + sinCargosDisponibles + " disponibles", "¿Pide sin cargos?", new DialogoAlertaSiNo()
                     {
                         @Override
                         public void Positivo()
@@ -993,13 +1171,18 @@ public class Pedidos extends FragmentActivity
                         }
                     }).show();
                 }
+
+
+                if (articuloSeleccionado.minimoVenta == articuloSeleccionado.unidadVenta)
+                {
+                    cambiaVisibilidad(llFraccuiones, GONE);
+                    edtFracciones.setValue(0);
+                }
                 else
                 {
-                    edtCantidad.setText(String.valueOf(1));
+                    cambiaVisibilidad(llFraccuiones, VISIBLE);
+//                    edtFracciones.setMax(articuloSeleccionado.unidadVenta);
                 }
-                edtCantidad.requestFocus();
-                edtCantidad.selectAll();
-                calcularPrecioFinal();
             }
 
             @Override
@@ -1007,148 +1190,86 @@ public class Pedidos extends FragmentActivity
             {
             }
         });
-
         spArticulo.setOnTouchListener(new View.OnTouchListener()
         {
             @Override
-            public boolean onTouch(View view, MotionEvent motionEvent)
+            public boolean onTouch(View v, MotionEvent event)
             {
                 modoBuscadorArticulo = false;
-                edtCantidad.setText("1");
-                edtCantidad.requestFocus();
-                edtCantidad.selectAll();
                 return false;
             }
         });
-
     }
 
-    private void edtArticulo(final Pedidos pedidos)
+    private void buscarArticulo()
     {
-        //NO SE BUSCA MAS DESDE onTextChanged
-//        final EditText edtArticulo = (EditText) findViewById(R.id.edtArticulo);
-
-//        edtArticulo.addTextChangedListener(new TextWatcher()
-//        {
-//            @Override
-//            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3)
-//            {
-//
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3)
-//            {
-//                buscarArticulo(pedidos, false);
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable editable)
-//            {
-//
-//            }
-//        });
-    }
-
-    private void buscarArticulo(Context context, boolean desdeBtnBuscarArticulo)
-    {
-
         String articulo = edtArticulo.getText().toString();
-
-//        Dao controladorDb = new Dao(context);
-//
-//        String cadenaPorcentual = "%";
-//
-//        if (desdeBtnBuscarArticulo)
-//        {
-//            cadenaPorcentual = "";
-//        }
-//
-//        Cursor cursor = controladorDb.ejecutarConsultaSql("select idArticulo, idLinea, idRubro from articulos where idArticulo like '" + articulo + cadenaPorcentual + "'");
-
-//        if (cursor.moveToFirst())
-//        {
-//            if (desdeBtnBuscarArticulo || cursor.getCount() == 1)
-//            {
-//
-        Articulo art = controladorArticulo.buscarArticulo(articulo);
-        if (art != null)
+        articuloSeleccionado = controladorArticulo.buscarArticulo(articulo);
+        if (articuloSeleccionado != null)
         {
-            modoBuscadorArticulo = true;
-
-            long idArticulo = controladorArticulo.buscarRowIdArticuloPorCodigo(art.idArticulo);
-            long idLinea = controladorArticulo.buscarRowIdLineaPorCodigo(art.idLinea);
-            long idRubro = controladorArticulo.buscarRowIdRubroPorRowId(art.idRubro);
-
-            spLinea.setSelection(getIndex(spLinea, idLinea));
-            idLineaSeleccionada = art.idLinea;
-
-            spRubro(this);
-
-            spRubro.setSelection(getIndex(spRubro, idRubro));
-            idRubroSeleccionado = art.idRubro;
-
-            spArticulo(this);
-            spArticulo.setSelection(getIndex(spArticulo, idArticulo));
-            idArticuloSeleccionado = art.idArticulo;
-
-            edtCantidad.setText("1");
-            edtArticulo.setText("");
-            edtCantidad.requestFocus();
-        }
+            seleccionArticulo();
+//            edtArticulo.requestFocus();
+       }
+        edtArticulo.setText("");
     }
 
-    private void edtCantidad(final Pedidos pedidos)
+    private void seleccionArticulo()
     {
-        edtCantidad.addTextChangedListener(new TextWatcher()
-        {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3)
-            {
+        modoBuscadorArticulo = true;
+        long idArticulo = controladorArticulo.buscarRowIdArticuloPorCodigo(articuloSeleccionado.idArticulo);
+        long idLinea = controladorArticulo.buscarRowIdLineaPorCodigo(articuloSeleccionado.idLinea);
+        long idRubro = controladorArticulo.buscarRowIdRubroPorRowId(articuloSeleccionado.idRubro);
 
-            }
+        spLinea.setSelection(getIndex(spLinea, idLinea));
+        idLineaSeleccionada = articuloSeleccionado.idLinea;
 
+        spRubro();
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3)
-            {
-                if (cant_sc != 0)
-                {
-                    if (Integer.valueOf(edtCantidad.getText().toString()) > cant_sc)
-                    {
-                        Toast.makeText(getApplicationContext(), "Esta pidiendo mas sin cargos que los disponibles: " + String.valueOf(cant_sc), Toast.LENGTH_LONG).show();
-                        edtCantidad.setText(String.valueOf(cant_sc));
-                    }
-                }
-                calcularPrecioFinal();
-            }
+        spRubro.setSelection(getIndex(spRubro, idRubro));
+        idRubroSeleccionado = articuloSeleccionado.idRubro;
 
-            @Override
-            public void afterTextChanged(Editable editable)
-            {
-
-            }
-        });
-
+        spArticulo();
+        spArticulo.setSelection(getIndex(spArticulo, idArticulo));
     }
+
+//    private void cerrarTeclado()
+//    {
+//        // Check if no view has focus:
+//        //View view = this.getCurrentFocus();
+//        edtArticulo.requestFocus();
+////        if (view != null)
+////        {
+//        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+//        if (imm != null)
+//        {
+//            imm.showSoftInput(edtArticulo, InputMethodManager.SHOW_IMPLICIT);
+////                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+//        }
+////        }
+//    }
 
     private void calcularPrecioFinal()
     {
-        if (!edtCantidad.getText().toString().isEmpty())
+        if (edtBultos.getValue() > 0 || edtFracciones.getValue() > 0)
         {
-            if (!edtUnitario.getText().toString().isEmpty())
+            if (precioUnitarioBulto > 0)
             {
-                float precioUnitario = Float.parseFloat(edtUnitario.getText().toString());
-                int cantidad = Integer.parseInt(edtCantidad.getText().toString());
+                int bultos = edtBultos.getValue() * articuloSeleccionado.unidadVenta;
+                int unidades = edtFracciones.getValue();
+                int cantidad = bultos + unidades;
                 float descuento = Float.parseFloat(edtDescuento.getText().toString());
                 float precioFinal = 0;
                 if (descuento < 100)
                 {
-                    float importeDescuento = (precioUnitario * descuento) / 100;
-                    precioFinal = (precioUnitario - importeDescuento) * cantidad;
+                    float importeDescuento = (precioUnitarioUnidad * descuento) / 100;
+                    precioFinal = (precioUnitarioUnidad - importeDescuento) * cantidad;
                 }
-                edtFinal.setText(String.valueOf(precioFinal));
+                edtFinal.setText(String.format("%.2f", precioFinal));
             }
+        }
+        else
+        {
+            edtFinal.setText(String.format("%.2f", 0.00));
         }
     }
 
@@ -1168,58 +1289,6 @@ public class Pedidos extends FragmentActivity
         return i;
     }
 
-    private void btnMas(Context context)
-    {
-        Button btnMas = (Button) findViewById(R.id.btnMas);
-
-        btnMas.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                String valor = edtCantidad.getText().toString();
-                int numero = 0;
-                if (!valor.trim().equals(""))
-                {
-                    numero = Integer.parseInt(valor);
-                }
-                numero = numero + 1;
-                edtCantidad.setText(String.format("%d", numero));
-                edtCantidad.requestFocus();
-                edtCantidad.selectAll();
-            }
-        });
-
-    }
-
-    private void btnMenos(Context context)
-    {
-        Button btnMenos = (Button) findViewById(R.id.btnMenos);
-
-        btnMenos.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                String valor = edtCantidad.getText().toString();
-                int numero = 0;
-                if (valor.trim() != "")
-                {
-                    numero = Integer.parseInt(valor);
-                    if (numero > 0)
-                    {
-                        numero = numero + -1;
-                    }
-                }
-                edtCantidad.setText(String.format("%d", numero));
-                edtCantidad.requestFocus();
-                edtCantidad.selectAll();
-            }
-        });
-
-    }
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -1232,17 +1301,14 @@ public class Pedidos extends FragmentActivity
             public boolean onMenuItemClick(MenuItem menuItem)
             {
 
-                final int TAKE_PICTURE = 115;
                 Date d = new Date();
                 CharSequence s = DateFormat.format("MM-dd-yy hh-mm-ss", d.getTime());
                 foto = Environment.getExternalStorageDirectory() + "/Foto_" + idClienteSeleccionado + "_" + s.toString() + ".jpg";
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 output = Uri.fromFile(new File(foto));
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, output);
-                startActivityForResult(intent, TAKE_PICTURE);
-
+                startActivityForResult(intent, INTENT_TAKE_PICTURE);
                 return true;
-
             }
         });
 
@@ -1269,7 +1335,7 @@ public class Pedidos extends FragmentActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        return id == R.id.action_settings ? true : super.onOptionsItemSelected(item);
+        return id == R.id.action_settings || super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -1277,61 +1343,6 @@ public class Pedidos extends FragmentActivity
     {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0)
         {
-
-        /*  String whereVisitado = " not exists ( select claveunica from caboper where " +
-                    "caboper.idCliente = cl.idCliente and caboper.fecha = '" + Fecha.obtenerFechaActual().toString() + "')" +
-                    "and not exists (select idCliente from PosicionesGPS where motivonocompra!=0 and PosicionesGPS.idCliente = cl.idCliente " +
-                    "and strftime('%Y-%m-%d', PosicionesGPS.Fecha)== '" + Fecha.obtenerFechaActual().toString() + "')";
-
-            Cursor cursor = dao.ejecutarConsultaSql("select idCliente from clientes as cl where " + whereVisitado + " and idCliente='" + idClienteSeleccionado + "'");
-
-            continua = true;
-
-            if (cursor.moveToFirst()) {
-                FabricaMensaje.dialogoAlertaSiNo(this, "Atencion no especifico Motivo de no Compra!", "¿Seguro que desea salir?", new DialogoAlertaSiNo() {
-                    @Override
-                    public void Positivo() {
-                        Pedidos.this.finish();
-                    }
-
-                    @Override
-                    public void Negativo() {
-                        continua = false;
-                    }
-                }).show();
-            }
-
-            if (continua == true) {*/
-//
-//            location = controladorPosicionesGPS.obtenerUbicacion(getApplicationContext());
-//
-////            PosicionesGPS posicionesGPS = new PosicionesGPS();
-//
-//            Double lat;
-//            Double lng;
-//
-//            if (location != null)
-//            {
-//                lat = location.getLatitude();
-//                lng = location.getLongitude();
-//            }
-//            else
-//            {
-//                lat = 0.00;
-//                lng = 0.00;
-//            }
-//
-//            posicionesGPS.latitud = lat.floatValue();
-//            posicionesGPS.longitud = lng.floatValue();
-//            posicionesGPS.fecha = Fecha.obtenerFechaHoraActual();
-//            posicionesGPS.enviado = 0;
-//            posicionesGPS.estado = 7; // CHECKOUT_CLIENTE
-//            posicionesGPS.motivoNoCompra = 0;
-//            posicionesGPS.idCliente = idClienteSeleccionado;
-//            posicionesGPS.pesos = Float.valueOf(edtTotalPedido.getText().toString());
-//            posicionesGPS.bultos = calcularBultos();
-
-//            PosicionesGPS posicionesGPS = controladorPosicionesGPS.creaPosicion(getApplicationContext(), MainActivity.loginUsuario, EstadoGPS.CHECKOUT_CLIENTE, MotivoNoCompra.COMPRADOR, this.idClienteSeleccionado, calcularBultos(), Float.valueOf(edtTotalPedido.getText().toString()));
             PosicionesGPS posicionesGPS = new PosicionesGPS();
             posicionesGPS.estado = EstadoGPS.CHECKOUT_CLIENTE;
             posicionesGPS.motivoNoCompra = MotivoNoCompra.COMPRADOR;
@@ -1340,14 +1351,6 @@ public class Pedidos extends FragmentActivity
             posicionesGPS.pesos = Float.valueOf(edtTotalPedido.getText().toString());
             posicionesGPS.usuario = loginUsuario;
             enviarPosicion(posicionesGPS);
-//            Mapeador<PosicionesGPS> posicionGPSMapeador = new Mapeador<PosicionesGPS>(posicionesGPS);
-//            ContentValues contentValues = posicionGPSMapeador.entityToContentValues();
-//            controladorPosicionesGPS.insertar(posicionesGPS);
-//            dao.insert("PosicionesGPS", contentValues);
-
-        /*  }else {
-                return true;
-            }*/
         }
 
         return super.onKeyDown(keyCode, event);
@@ -1363,10 +1366,8 @@ public class Pedidos extends FragmentActivity
 
         if (cursor != null && cursor.moveToFirst())
         {
-
             do
             {
-
                 int bultosPedidos = cursor.getInt(3);
 
                 bultos = bultos + bultosPedidos;

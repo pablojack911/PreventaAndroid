@@ -35,7 +35,7 @@ public class Mapeador<T> extends GenericBase<T>
             {
                 //por defecto asumo que los campos entidad = campos base de datos
                 String campo = fields[i].getName();
-                if (!campo.equals("serialVersionUID") && (!campo.equals("PARCELABLE_WRITE_RETURN_VALUE")) && (!campo.equals("CREATOR")) && (!campo.equals("CONTENTS_FILE_DESCRIPTOR")) && (!campo.equals("PARCELABLE_ELIDE_DUPLICATES")))
+                if (!campo.equals("serialVersionUID") && (!campo.equals("PARCELABLE_WRITE_RETURN_VALUE")) && (!campo.equals("CREATOR")) && (!campo.equals("CONTENTS_FILE_DESCRIPTOR")) && (!campo.equals("PARCELABLE_ELIDE_DUPLICATES")) && (!campo.equals("$change")))
                 {
                     map.put(campo, campo);
                 }

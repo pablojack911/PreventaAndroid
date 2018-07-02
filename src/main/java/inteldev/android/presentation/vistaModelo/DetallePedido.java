@@ -5,25 +5,64 @@ package inteldev.android.presentation.vistaModelo;
  */
 public class DetallePedido
 {
-    public DetallePedido()
-    {
-
-    }
     public String idArticulo;
     public String nombre;
     public int entero;
+    public int fraccion;
+    public int unidadVenta;
     public float precio;
     public float descuento;
     public String idFila;
     public String oferta;
     public String claveUnica;
+    public DetallePedido()
+    {
 
-    public String getIdArticulo(){return idArticulo;}
-    public String getNombre(){return nombre;}
-    public int getEntero(){return entero;}
-    public float getPrecio(){return precio;}
-    public float getDescuento(){return descuento;}
-    public String getIdFila(){return idFila;}
-    public String getOferta(){return oferta;}
+    }
+
+    public int getUnidadVenta()
+    {
+        return unidadVenta;
+    }
+
+    public int getFraccion()
+    {
+        return fraccion;
+    }
+
+    public String getIdArticulo()
+    {
+        return idArticulo;
+    }
+
+    public String getNombre()
+    {
+        return nombre;
+    }
+
+    public int getEntero()
+    {
+        return entero;
+    }
+
+    public float getPrecio()
+    {
+        return precio;
+    }
+
+    public float getDescuento()
+    {
+        return descuento;
+    }
+
+    public String getIdFila()
+    {
+        return idFila;
+    }
+
+    public String getOferta()
+    {
+        return oferta;
+    }
 
 }

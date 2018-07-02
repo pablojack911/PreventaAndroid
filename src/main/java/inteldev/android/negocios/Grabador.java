@@ -25,11 +25,13 @@ public class Grabador<T> extends GenericBase<T>
 
     /**
      * Saves a entity
+     *
      * @return number of affected rows
      */
     public long save()
     {
-        try {
+        try
+        {
             Mapeador mapeador = new Mapeador(this.entity);
             ContentValues cv = mapeador.entityToContentValues();
             boolean codeExists = buscador.codeExists(value);
@@ -37,20 +39,22 @@ public class Grabador<T> extends GenericBase<T>
 
             //String tabla = MapeadorNombreEntidadTabla.getInstancia().getTabla(this.entityClass.getSimpleName()) ;
 
-            if (codeExists == false) {
+            if (!codeExists)
+            {
 
                 //result = this.dbManager.insert(this.entityClass.getSimpleName(), cv);
                 result = this.controladorDb.insert(this.table, cv);
             }
-            else {
+            else
+            {
                 //result = this.dbManager.update(this.entityClass.getSimpleName(), cv, field + " = " + value);
-                result = this.controladorDb.update(this.table, cv, field + " = " + value);
+                result = this.controladorDb.update(this.table, cv, field + " = ?", new String[]{value});
             }
             return result;
         }
         catch (Exception e)
         {
-            Log.w("GenericRecorder",e.getMessage());
+            Log.w("GenericRecorder", e.getMessage());
             return 0;
         }
     }

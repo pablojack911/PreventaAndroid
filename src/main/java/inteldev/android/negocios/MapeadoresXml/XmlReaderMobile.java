@@ -4,110 +4,110 @@ import android.content.ContentValues;
 import android.util.Log;
 
 import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.lang.reflect.*;
-import java.text.SimpleDateFormat;
 
 import inteldev.android.accesoadatos.Dao;
 
 /**
  * Created by Operador on 18/03/14.
  */
-public class XmlReaderMobile extends XmlReader {
+public class XmlReaderMobile extends XmlReader
+{
 
-    private Dao controladorDb;
     public List<TablaXml> tablas = new ArrayList<TablaXml>();
+    private Dao controladorDb;
     private TablaXml tablaActual;
     private ContentValues contentValues = null;
+    private Boolean leyendoRegistro;
 
-    public XmlReaderMobile(XmlPullParser xmlPullParser,Dao controladorDb)
+    public XmlReaderMobile(XmlPullParser xmlPullParser, Dao controladorDb)
     {
         super(xmlPullParser);
         this.controladorDb = controladorDb;
     }
 
-    private Boolean leyendoRegistro;
     @Override
     public void StartTag(String tag)
     {
-        if(tablaActual == null || (!this.leyendoRegistro && tablaActual.NombreTablaTagXml !=tag) )
+        if (tablaActual == null || (!this.leyendoRegistro && tablaActual.NombreTablaTagXml != tag))
         {
-            SetearTablaActual(tag);
-            CrearContentValue();
-            leyendoRegistro=true;
+            boolean ok = SetearTablaActual(tag);
+            if(ok)
+            {
+                CrearContentValue();
+                leyendoRegistro = true;
+            }
         }
         else
         {
-        /*    if (tablaActual.Nombre.equals(tag))
-            {
-                CrearContentValue();
-            }*/
-
             SetearPropiedad(tag);
         }
     }
 
     private void CrearContentValue()
     {
-        this.contentValues  = new ContentValues();
+        this.contentValues = new ContentValues();
     }
 
     private void SetearPropiedad(String tag)
     {
-        String campo=null;
-        Type tipo=null;
+        Log.d("SetearPropiedad", tag);
+        String campo = null;
+        Type tipo = null;
         Object valor;
 
-        Iterator<TagXmlCampoTabla> iterator = tablaActual.tagXmlCampoTablas.iterator();
-
-        while (iterator.hasNext())
+        for (TagXmlCampoTabla tagXmlCampoTabla : tablaActual.tagXmlCampoTablas)
         {
-            TagXmlCampoTabla tagXmlCampoTabla = iterator.next();
             if (tagXmlCampoTabla.Tag.equals(tag))
             {
                 campo = tagXmlCampoTabla.Campo;
                 tipo = tagXmlCampoTabla.Tipo;
+                break;
             }
         }
-        if (campo!=null && tipo !=null)
+        if (campo != null && tipo != null)
+        {
             ObtenerValor(campo, tipo);
+        }
+        else
+        {
+            Log.e("SetearPropiedad", "Campo o Tipo es null. Tag=" + tag);
+        }
     }
 
 
     private void ObtenerValor(String campo, Type tipo)
     {
         String valorText;
+        Log.d("ObtenerValor", campo);
         try
 
         {
             valorText = xmlPullParser.nextText().trim();
 
-            if(tipo.toString().equals(String.class.toString()))
+            if (tipo.toString().equals(String.class.toString()))
             {
-                if (this.tablaActual.NombreTabla.toString() == "Stock" &&  campo=="idArticulo") {
-                    String epa = "sss";
-                    if (epa == "dssd"){
-
-                    }
-                }
-
-                this.contentValues.put(campo,valorText);
+                this.contentValues.put(campo, valorText);
             }
             else
             {
                 if (tipo.toString().equals(Integer.class.toString()))
                 {
-                    this.contentValues.put(campo,Integer.valueOf(valorText));
+                    this.contentValues.put(campo, Integer.valueOf(valorText));
                 }
                 else
                 {
                     if (tipo.toString().equals(Float.class.toString()))
                     {
-                        this.contentValues.put(campo,Float.valueOf(valorText+"f"));
+                        this.contentValues.put(campo, Float.valueOf(valorText + "f"));
                     }
                     else
                     {
@@ -115,16 +115,20 @@ public class XmlReaderMobile extends XmlReader {
                         {
                             SimpleDateFormat parser;
 
-                            if(valorText.length() == 8)
+                            if (valorText.length() == 8)
                             {
                                 parser = new SimpleDateFormat("yyyyMMdd");
                             }
-                            else {
+                            else
+                            {
                                 Character caracter = valorText.toString().charAt(19);
 
-                                if (caracter.toString().equals("-")) {
+                                if (caracter.toString().equals("-"))
+                                {
                                     parser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss-SSS");
-                                } else {
+                                }
+                                else
+                                {
                                     parser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
                                 }
                             }
@@ -137,54 +141,72 @@ public class XmlReaderMobile extends XmlReader {
                 }
             }
         }
-        catch (Exception ex)
+//        catch ()
+//        {
+//            Log.e("Error date", ex.getMessage().toString());
+//
+//        }
+        catch (ParseException e)
         {
-            Log.e("Eror date",ex.getMessage().toString());
-
+            Log.e("ObtenerValor", "Parser exception " + e.getLocalizedMessage());
+        }
+        catch (XmlPullParserException e)
+        {
+            Log.e("ObtenerValor", "XmlPullParserException " + e.getLocalizedMessage());
+        }
+        catch (IOException e)
+        {
+            Log.e("ObtenerValor", "IOException " + e.getLocalizedMessage());
         }
     }
 
-    private void SetearTablaActual(String tag)
+    private boolean SetearTablaActual(String tag)
     {
-        Iterator<TablaXml> iterator = tablas.iterator();
-        while(iterator.hasNext())
+        Log.d("XMLReaderMobile", tag);
+        for (TablaXml tablaXml : tablas)
         {
-            TablaXml tablaXml = iterator.next();
-
             if (tablaXml.NombreTablaTagXml.equals(tag))
             {
                 tablaActual = tablaXml;
-                break;
+                return true;
             }
         }
+        return false;
     }
 
     @Override
     public void EndTag(String tag)
     {
-        if (this.tablaActual != null &&  this.tablaActual.NombreTablaTagXml.equals(tag))
+        Log.d("EndTag", tag);
+        if (this.tablaActual != null && this.tablaActual.NombreTablaTagXml.equals(tag))
         {
-            this.leyendoRegistro=false;
+            this.leyendoRegistro = false;
 
             // Grabar
 
-            String condicion = controladorDb.getWhere(this.contentValues,this.tablaActual.claves);
+//            String condicion = controladorDb.getWhere(this.contentValues, this.tablaActual.claves);
+            String where = controladorDb.getWhere(this.tablaActual.claves);
+            String[] args = controladorDb.getArgs(this.contentValues, this.tablaActual.claves);
 
             String borrado = this.contentValues.getAsString("borrado");
 
             if (borrado != null && borrado.equals("1"))
             {
-                controladorDb.delete(this.tablaActual.NombreTabla, condicion);
+                long res = controladorDb.delete(this.tablaActual.NombreTabla, where, args);
+                Log.d("Borrando", this.tablaActual + " -> " + res + " lineas." + args.toString());
             }
-            else {
-                if (controladorDb.codeExists(this.tablaActual.NombreTabla, condicion)) {
-                    controladorDb.update(this.tablaActual.NombreTabla, this.contentValues, condicion);
-                } else {
+            else
+            {
+                if (controladorDb.codeExists(this.tablaActual.NombreTabla, where, args))
+                {
+                    controladorDb.update(this.tablaActual.NombreTabla, this.contentValues, where, args);
+                }
+                else
+                {
                     controladorDb.insert(this.tablaActual.NombreTabla, this.contentValues);
                 }
             }
-
-            this.contentValues=null;
+            this.contentValues = null;
         }
     }
 

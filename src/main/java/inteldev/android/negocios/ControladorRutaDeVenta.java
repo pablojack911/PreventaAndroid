@@ -63,8 +63,7 @@ public class ControladorRutaDeVenta
         String whereVisitado;
         if (seleccionVisitado == 0)
         {
-            whereVisitado = "and not exists ( select claveunica from caboper where " +
-                    "caboper.idCliente = cl.idCliente and caboper.fecha = '" + Fecha.obtenerFechaActual().toString() + "')";
+            whereVisitado = " and not (exists (select claveunica from caboper where caboper.idCliente = cl.idCliente and caboper.fecha = '" + Fecha.obtenerFechaActual().toString() + "') or exists (select distinct idcliente from posicionesgps pos where motivonocompra>0 and pos.idcliente=cl.idcliente)) ";
 //            whereVisitado = "and not exists ( select claveunica from caboper where " +
 //                    "caboper.idCliente = cl.idCliente and caboper.fecha = '" + Fecha.obtenerFechaActual().toString() + "')" +
 //                    "and not exists (select distinct idCliente from PosicionesGPS where PosicionesGPS.idCliente = cl.idCliente " +
@@ -75,8 +74,7 @@ public class ControladorRutaDeVenta
         {
             if (seleccionVisitado == 1)
             {
-                whereVisitado = "and exists ( select claveunica from caboper where " +
-                        "caboper.idCliente = cl.idCliente and caboper.fecha = '" + Fecha.obtenerFechaActual().toString() + "')";
+                whereVisitado = " and (exists (select claveunica from caboper where caboper.idCliente = cl.idCliente and caboper.fecha = '" + Fecha.obtenerFechaActual().toString() + "') or exists (select distinct idcliente from posicionesgps pos where motivonocompra>0 and pos.idcliente=cl.idcliente))";
 //                whereVisitado = "and (exists ( select claveunica from caboper where " +
 //                        "caboper.idCliente = cl.idCliente and caboper.fecha = '" + Fecha.obtenerFechaActual().toString() + "')" +
 //                        "or  exists (select distinct idCliente from PosicionesGPS where PosicionesGPS.idCliente = cl.idCliente " +
@@ -110,13 +108,7 @@ public class ControladorRutaDeVenta
 
         ArrayList<Cliente> listaClientes = new ArrayList<Cliente>();
 
-        String query = "select distinct cl.idCliente,cl.nombre, cl.domicilio, cl.telefono, cl.cuit " +
-                "from rutaventas AS RV " +
-                "JOIN configrutas as CR ON CR.idRutaVenta = RV.IdRutaVenta " +
-                "JOIN clientes as cl on cl.idCliente = cr.IdCliente " +
-                "where " + dia + " and (vendedor = '" + loginUsuario + "' or suplente = '" + loginUsuario + "')" +
-                " " + whereVisitado +
-                " order by " + stringOrdenLista;
+        String query = "select distinct cl.idCliente,cl.nombre, cl.domicilio, cl.telefono, cl.cuit " + "from rutaventas AS RV " + "JOIN configrutas as CR ON CR.idRutaVenta = RV.IdRutaVenta " + "JOIN clientes as cl on cl.idCliente = cr.IdCliente " + "where " + dia + " and (vendedor = '" + loginUsuario + "' or suplente = '" + loginUsuario + "')" + " " + whereVisitado + " order by " + stringOrdenLista;
 
         Cursor cursor = dao.ejecutarConsultaSql(query);
 

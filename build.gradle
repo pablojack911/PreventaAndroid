@@ -1,13 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 24
-
+    compileSdkVersion 27
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 21
+        targetSdkVersion 27
         versionCode 1
-        versionName "1.08"
+        versionName "1.13"
     }
     buildTypes {
         release {
@@ -15,22 +14,37 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
+    productFlavors {
+    }
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile files('libs/ksoap2-android-assembly-3.0.0-jar-with-dependencies.jar')
-    compile 'com.android.support:design:24.2.1'
-    compile 'com.google.android.gms:play-services-location:10.2.0'
-    compile 'com.android.support.constraint:constraint-layout:1.0.1'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation files('libs/ksoap2-android-assembly-3.0.0-jar-with-dependencies.jar')
+    implementation 'com.android.support:design:27.1.1'
+    implementation 'com.google.android.gms:play-services-location:12.0.1'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.github.travijuu:numberpicker:1.0.7'
+    implementation 'com.android.support:support-annotations:27.1.1'
 }
 
 buildscript {
     repositories {
         jcenter()
+        maven {
+            url "https://maven.google.com"
+        }
+        google()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.android.tools.build:gradle:3.1.3'
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+        google()
     }
 }

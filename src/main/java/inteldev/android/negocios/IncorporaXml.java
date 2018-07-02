@@ -43,40 +43,29 @@ public class IncorporaXml
     {
         try
         {
-
-//            DatosMobileXMLParser datosMobileXMLParser = new DatosMobileXMLParser();
-
             String directory = Environment.getExternalStorageDirectory().toString();
-
             Dao controladorDb = new Dao(context);
-
-            // datosMobile1
             String ubicacion = directory + "/" + Environment.DIRECTORY_DOWNLOADS + "/InteldevMobile.xml";
-
             File xml = new File(ubicacion);
             FileInputStream fin = new FileInputStream(xml);
             InputStreamReader in = new InputStreamReader(fin);
             BufferedReader bufferedReader = new BufferedReader(in);
-
             XmlPullParser xmlPullParser = Xml.newPullParser();
             xmlPullParser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
             xmlPullParser.setInput(bufferedReader);
-
             XmlReaderMobile xmlReaderMobile = new XmlReaderMobile(xmlPullParser, controladorDb);
 
-            // datosMobile2
-            String ubicacion2 = directory + "/" + Environment.DIRECTORY_DOWNLOADS + "/InteldevMobile2.xml";
-
-            File xml2 = new File(ubicacion2);
-            FileInputStream fin2 = new FileInputStream(xml2);
-            InputStreamReader in2 = new InputStreamReader(fin2);
-            BufferedReader bufferedReader2 = new BufferedReader(in2);
-
-            XmlPullParser xmlPullParser2 = Xml.newPullParser();
-            xmlPullParser2.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-            xmlPullParser2.setInput(bufferedReader2);
-
-            XmlReaderMobile xmlReaderMobile2 = new XmlReaderMobile(xmlPullParser2, controladorDb);
+//
+//            // datosMobile2
+//            String ubicacion2 = directory + "/" + Environment.DIRECTORY_DOWNLOADS + "/InteldevMobile2.xml";
+//            File xml2 = new File(ubicacion2);
+//            FileInputStream fin2 = new FileInputStream(xml2);
+//            InputStreamReader in2 = new InputStreamReader(fin2);
+//            BufferedReader bufferedReader2 = new BufferedReader(in2);
+//            XmlPullParser xmlPullParser2 = Xml.newPullParser();
+//            xmlPullParser2.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+//            xmlPullParser2.setInput(bufferedReader2);
+//            XmlReaderMobile xmlReaderMobile2 = new XmlReaderMobile(xmlPullParser2, controladorDb);
 
             TablaXmlArticulo tablaXmlArticulo = new TablaXmlArticulo();
             TablaXmlCabLista tablaXmlCabListas = new TablaXmlCabLista();
@@ -108,19 +97,15 @@ public class IncorporaXml
             xmlReaderMobile.tablas.add(tablaXmlRubro);
             xmlReaderMobile.tablas.add(tablaXmlRutaVenta);
             xmlReaderMobile.tablas.add(tablaXmlVendedor);
+            xmlReaderMobile.tablas.add(tablaXmlOferEsp);
+            xmlReaderMobile.tablas.add(tablaXmlOfer_det);
+            xmlReaderMobile.tablas.add(tablaXmlCabBonif);
+            xmlReaderMobile.tablas.add(tablaXmlDetBonif);
+            xmlReaderMobile.tablas.add(tablaXmlAlcance);
+            xmlReaderMobile.tablas.add(tablaXmlStock);
             xmlReaderMobile.tablas.add(tablaXmlBarras);
-
-
-            xmlReaderMobile2.tablas.add(tablaXmlOferEsp);
-
-            xmlReaderMobile2.tablas.add(tablaXmlOfer_det);
-            xmlReaderMobile2.tablas.add(tablaXmlCabBonif);
-            xmlReaderMobile2.tablas.add(tablaXmlDetBonif);
-            xmlReaderMobile2.tablas.add(tablaXmlAlcance);
-            xmlReaderMobile2.tablas.add(tablaXmlStock);
-
             xmlReaderMobile.Read();
-            xmlReaderMobile2.Read();
+//            xmlReaderMobile2.Read();
 
 
         }

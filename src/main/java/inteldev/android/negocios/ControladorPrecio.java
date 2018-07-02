@@ -48,14 +48,28 @@ public class ControladorPrecio
         Float precio = 0f;
 
         String lista = controladorCliente.obtenerLista(cliente);
-        if (lista != null) {
-            Cursor cursor = dao.ejecutarConsultaSql("select precio from detlistas" +
-                    " where idLista ='" + lista + "' and articulo = '" + articulo + "'");
+        if (lista != null)
+        {
+            Cursor cursor = dao.ejecutarConsultaSql("select precio from detlistas where idLista ='" + lista + "' and articulo = '" + articulo + "'");
 
             if (cursor.moveToFirst())
+            {
                 precio = cursor.getFloat(0);
+            }
         }
 
+        return precio;
+    }
+
+    public Float obtenerFolder(Context context, String articulo, String cliente)
+    {
+        Float precio = 0f;
+        String lista = controladorCliente.obtenerLista(cliente);
+        Cursor cursor = dao.ejecutarConsultaSql("select folder from detlistas where idLista ='" + lista + "' and articulo = '" + articulo + "'");
+        if (cursor.moveToFirst())
+        {
+            precio = cursor.getFloat(0);
+        }
         return precio;
     }
 }

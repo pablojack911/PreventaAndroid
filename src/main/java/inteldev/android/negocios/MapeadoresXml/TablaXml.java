@@ -18,4 +18,10 @@ public class TablaXml {
         this.tagXmlCampoTablas = new ArrayList<TagXmlCampoTabla>();
         this.claves = new ArrayList<String>();
     }
+
+    @Override
+    public String toString()
+    {
+        return this.NombreTabla;
+    }
 }

@@ -2,17 +2,15 @@ package inteldev.android.negocios;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
-import android.location.Location;
-import android.location.LocationManager;
 import android.util.Log;
-
-import java.util.List;
 
 import inteldev.android.accesoadatos.IDao;
 import inteldev.android.modelo.PosicionesGPS;
+import inteldev.android.servicios.GPSIntentService;
 
-import static android.content.Context.LOCATION_SERVICE;
+import static inteldev.android.CONSTANTES.POSICION_GPS_KEY;
 
 /**
  * Created by Pocho on 25/01/2017.
@@ -45,11 +43,11 @@ public class ControladorPosicionesGPS
         long res = -1;
         try
         {
-            res = this.dao.update("PosicionesGPS", contentValues, "idCliente='" + idCliente + "'" + "and strftime('%Y-%m-%d', PosicionesGPS.Fecha)== '" + fecha + "'");
+            res = this.dao.update("PosicionesGPS", contentValues, "idCliente=? and strftime('%Y-%m-%d', PosicionesGPS.Fecha)=?", new String[]{idCliente, fecha});
         }
         catch (Exception ex)
         {
-            Log.e("PosicionesGPS.actualizar", ex.getLocalizedMessage());
+            Log.e("PosicionesGPS.act", ex.getLocalizedMessage());
         }
         return res;
     }
@@ -69,57 +67,76 @@ public class ControladorPosicionesGPS
         }
         return res;
     }
+//
+//    public Location obtenerUbicacion(Context context)
+//    {
+//        LocationManager mLocationManager;
+//        mLocationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
+//        List<String> providers = mLocationManager.getProviders(true);
+//        Location bestLocation = null;
+//        for (String provider : providers)
+//        {
+//            @SuppressLint("MissingPermission") Location l = mLocationManager.getLastKnownLocation(provider);
+//            if (l == null)
+//            {
+//                continue;
+//            }
+//            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy())
+//            {
+//                // Found best last known location: %s", l);
+//                bestLocation = l;
+//            }
+//        }
+//        if (bestLocation == null)
+//        {
+//            bestLocation = new Location(LocationManager.GPS_PROVIDER);
+//        }
+//        return bestLocation;
+//    }
+//
+//    public PosicionesGPS creaPosicion(Context context, String usuario, int estado, int motivoNoCompra, String idCliente, int bultos, float pesos)
+//    {
+//        String imei = FabricaNegocios.obtenerImei(context);
+//        PosicionesGPS posicionesGPS = new PosicionesGPS();
+//        Double lat = 0.00;
+//        Double lng = 0.00;
+//
+//        Location location = this.obtenerUbicacion(context);
+//        if (location != null)
+//        {
+//            lat = location.getLatitude();
+//            lng = location.getLongitude();
+//        }
+//
+//        posicionesGPS.latitud = lat.floatValue();
+//        posicionesGPS.longitud = lng.floatValue();
+//        posicionesGPS.fecha = Fecha.obtenerFechaHoraActual();
+//        posicionesGPS.imei = imei;
+//        posicionesGPS.estado = estado;
+//        posicionesGPS.motivoNoCompra = motivoNoCompra;
+//        posicionesGPS.idCliente = idCliente;
+//        posicionesGPS.bultos = bultos;
+//        posicionesGPS.pesos = pesos;
+//
+//        return posicionesGPS;
+//    }
 
-    public Location obtenerUbicacion(Context context)
+    public PosicionesGPS obtenerUltimaPosicion(String usuario)
     {
-        LocationManager mLocationManager;
-        mLocationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
-        List<String> providers = mLocationManager.getProviders(true);
-        Location bestLocation = null;
-        for (String provider : providers)
+        PosicionesGPS posicionesGPS = null;
+        Cursor cursor = dao.ejecutarConsultaSql("select * from PosicionesGPS where usuario='" + usuario + "' order by fecha desc");
+        if (cursor.moveToFirst())
         {
-            Location l = mLocationManager.getLastKnownLocation(provider);
-            if (l == null)
-            {
-                continue;
-            }
-            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy())
-            {
-                // Found best last known location: %s", l);
-                bestLocation = l;
-            }
+            Mapeador<PosicionesGPS> mapper = new Mapeador<PosicionesGPS>(new PosicionesGPS());
+            posicionesGPS = mapper.cursorToEntity(cursor);
         }
-        if (bestLocation == null)
-        {
-            bestLocation = new Location(LocationManager.GPS_PROVIDER);
-        }
-        return bestLocation;
+        return posicionesGPS;
     }
 
-    public PosicionesGPS creaPosicion(Context context, String usuario, int estado, int motivoNoCompra, String idCliente, int bultos, float pesos)
+    public void enviarPosicion(Context context, PosicionesGPS posicionesGPS)
     {
-        String imei = FabricaNegocios.obtenerImei(context);
-        PosicionesGPS posicionesGPS = new PosicionesGPS();
-        Double lat = 0.00;
-        Double lng = 0.00;
-
-        Location location = this.obtenerUbicacion(context);
-        if (location != null)
-        {
-            lat = location.getLatitude();
-            lng = location.getLongitude();
-        }
-
-        posicionesGPS.latitud = lat.floatValue();
-        posicionesGPS.longitud = lng.floatValue();
-        posicionesGPS.fecha = Fecha.obtenerFechaHoraActual();
-        posicionesGPS.imei = imei;
-        posicionesGPS.estado = estado;
-        posicionesGPS.motivoNoCompra = motivoNoCompra;
-        posicionesGPS.idCliente = idCliente;
-        posicionesGPS.bultos = bultos;
-        posicionesGPS.pesos = pesos;
-
-        return posicionesGPS;
+        Intent mServiceIntent = new Intent(context, GPSIntentService.class);
+        mServiceIntent.putExtra(POSICION_GPS_KEY, posicionesGPS);
+        context.startService(mServiceIntent);
     }
 }

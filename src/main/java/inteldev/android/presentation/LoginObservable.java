@@ -1,19 +1,22 @@
 package inteldev.android.presentation;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
+import static inteldev.android.CONSTANTES.SESION_INICIADA;
+import static inteldev.android.CONSTANTES.USUARIO_KEY;
+
 /**
  * Created by Operador on 28/04/14.
  */
 public class LoginObservable
 {
-
     private static LoginObservable instancia;
-    private boolean login;
-    private String loginUsuario;
     private OnLoginListener onLoginListener;
 
-    protected LoginObservable()
+    public LoginObservable()
     {
-
     }
 
     public static LoginObservable getInstancia()
@@ -22,7 +25,6 @@ public class LoginObservable
         {
             instancia = new LoginObservable();
         }
-
         return instancia;
     }
 
@@ -31,26 +33,9 @@ public class LoginObservable
         this.onLoginListener = onLoginListener;
     }
 
-    public boolean isLogin()
+    private SharedPreferences getPreferences(Context context)
     {
-        return login;
+        return PreferenceManager.getDefaultSharedPreferences(context);
     }
 
-    public LoginObservable setLogin(boolean login)
-    {
-        this.login = login;
-        this.onLoginListener.OnLoginChange(login);
-        return getInstancia();
-    }
-
-    public String getLoginUsuario()
-    {
-        return loginUsuario;
-    }
-
-    public LoginObservable setLoginUsuario(String loginUsuario)
-    {
-        this.loginUsuario = loginUsuario;
-        return getInstancia();
-    }
 }

@@ -43,7 +43,7 @@ public class DescargaClient
         });
 
         String servicioBajarDatosMobile = "";
-        String servicioBajarDatosMobile2 = "";
+//        String servicioBajarDatosMobile2 = "";
 
         EstadoWebService estadoWebService = FabricaNegocios.obtenerEstadoWebService(context, loginUsuario);
 
@@ -58,18 +58,18 @@ public class DescargaClient
             if (this.estadoWebService == EstadoWebService.Estado.ConexionLocal)
             {
                 servicioBajarDatosMobile = "bajarDatosMobile";
-                servicioBajarDatosMobile2 = "bajarDatosMobile2";
+//                servicioBajarDatosMobile2 = "bajarDatosMobile2";
                 url = ServiceRegistry.direccionWSLocal;
             }
             else
             {
                 servicioBajarDatosMobile = "bajarDatosMobileRemoto";
-                servicioBajarDatosMobile2 = "bajarDatosMobile2Remoto";
+//                servicioBajarDatosMobile2 = "bajarDatosMobile2Remoto";
                 url = ServiceRegistry.direccionWSRemoto;
             }
         }
         this.bajarDatosMobile1(servicioBajarDatosMobile);
-        this.bajarDatosMobile2(servicioBajarDatosMobile2);
+//        this.bajarDatosMobile2(servicioBajarDatosMobile2);
     }
 
     public void setDescargaListener(DescargaListener descargaListener)

@@ -1,5 +1,6 @@
 package inteldev.android.servicios;
 
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -16,8 +17,9 @@ import inteldev.android.modelo.EstadoGPS;
 import inteldev.android.modelo.PosicionesGPS;
 import inteldev.android.negocios.ControladorPosicionesGPS;
 import inteldev.android.negocios.FabricaNegocios;
-import inteldev.android.presentation.LoginObservable;
+import inteldev.android.negocios.SharedPreferencesManager;
 
+import static android.location.LocationManager.*;
 import static inteldev.android.CONSTANTES.POSICION_GPS_KEY;
 import static inteldev.android.modelo.MotivoNoCompra.NO_HAY_DATOS_REGISTRADOS;
 
@@ -56,7 +58,7 @@ public class ServiceGeolocation extends Service implements LocationListener
 
         try
         {
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE, this);
+            mLocationManager.requestLocationUpdates(GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE, this);
         }
         catch (java.lang.SecurityException ex)
         {
@@ -88,7 +90,7 @@ public class ServiceGeolocation extends Service implements LocationListener
     public void procesaPosicion(Location location, int estadoGPS)
     {
         PosicionesGPS posicionesGPS = new PosicionesGPS();
-        posicionesGPS.usuario = LoginObservable.getInstancia().getLoginUsuario();
+        posicionesGPS.usuario = SharedPreferencesManager.getLoginUsuario(getApplicationContext());
         posicionesGPS.estado = estadoGPS;
         posicionesGPS.motivoNoCompra = NO_HAY_DATOS_REGISTRADOS;
         posicionesGPS.idCliente = "VIAJE";
@@ -121,10 +123,11 @@ public class ServiceGeolocation extends Service implements LocationListener
 
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onProviderDisabled(String provider)
     {
-        procesaPosicion(mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER), EstadoGPS.GPS_APAGADO);
+        procesaPosicion(mLocationManager.getLastKnownLocation(GPS_PROVIDER), EstadoGPS.GPS_APAGADO);
         Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);

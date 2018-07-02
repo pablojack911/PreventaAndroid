@@ -25,7 +25,7 @@ public class EnviarEstadosGeoLocalizacion
 
             this.dao = FabricaNegocios.obtenerDao(context);
 
-            Cursor cursor = this.dao.ejecutarConsultaSql("select fecha,latitud,longitud,estado,bultos,pesos,idcliente,motivonocompra,imei,usuario from posicionesGPS " +
+            Cursor cursor = this.dao.ejecutarConsultaSql("select fecha,latitud,longitud,estado,bultos,pesos,idcliente,motivonocompra,imei,usuario,id from posicionesGPS " +
                     " where enviado=0");
 
             if (cursor != null && cursor.moveToFirst())
@@ -47,6 +47,7 @@ public class EnviarEstadosGeoLocalizacion
                     String motivoNoCompra = cursor.getString(7);
                     String imei = cursor.getString(8);
                     String usuario = cursor.getString(9);
+                    int id = cursor.getInt(10);
 
                     webServiceHelper = new WebServiceHelper();
 //                    webServiceHelper.addService("http://www.inteldevmobile.com.ar", "ActualizarPosicionTest", ServiceRegistry.direccionWSRemoto + ServiceRegistry.nombreWS, "http://www.inteldevmobile.com.ar/ActualizarPosicionTest", "ActualizarPosicionTest", 0);
@@ -71,14 +72,14 @@ public class EnviarEstadosGeoLocalizacion
 
                     if ("ok".equals(resp))
                     {
-                        this.dao.ejecutarSentenciaSql("update posicionesGPS set enviado = 1 where fecha = '" + fechaHora + "'");
+                        this.dao.ejecutarSentenciaSql("update posicionesGPS set enviado = 1 where id = '" + id + "'");
                     }
                 } while (cursor.moveToNext());
             }
         }
         catch (Exception ex)
         {
-            Log.e("EnviarEstadosGeoLocalizacion", ex.getLocalizedMessage());
+            Log.e("EnviarEstadosGeoLoc", ex.getLocalizedMessage());
         }
 
     }

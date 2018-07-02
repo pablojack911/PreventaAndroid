@@ -9,7 +9,6 @@ import inteldev.android.accesoadatos.Dao;
 /**
  * GenericSearcher
  *
- *
  * @author Pablo Vigolo
  * @version 1.0 28 february 2014
  */
@@ -27,29 +26,30 @@ public class Buscador<T> extends GenericBase<T>
 
     public T searchByCode(String value)
     {
-        Cursor cursor = queryByCode(value);
+        Cursor cursor = controladorDb.queryByCode(this.table, this.field, new String[]{value});
         cursor.moveToFirst();
         return this.mapeador.cursorToEntity(cursor);
     }
 
     public boolean codeExists(String value)
     {
-        Cursor cursor = queryByCode(value);
+        Cursor cursor = controladorDb.queryByCode(this.table, this.field, new String[]{value});
         return cursor.getCount() > 0;
     }
-
-    private Cursor queryByCode(String value)
-    {
-
-        Cursor cursor = null;
-
-        try {
-            cursor = controladorDb.getSqLiteDatabase().rawQuery("select * from "+this.table+" where "+this.field+" = "+value, null);
-        }
-        catch (Exception e)
-        {
-            Log.w("GenericSearcher", e.getMessage());
-        }
-        return  cursor;
-    }
+//
+//    private Cursor queryByCode(String value)
+//    {
+//
+//        Cursor cursor = null;
+//
+//        try
+//        {
+//            cursor = controladorDb.getSqLiteDatabase().rawQuery("select * from " + this.table + " where " + this.field + " = " + value, null);
+//        }
+//        catch (Exception e)
+//        {
+//            Log.w("GenericSearcher", e.getMessage());
+//        }
+//        return cursor;
+//    }
 }

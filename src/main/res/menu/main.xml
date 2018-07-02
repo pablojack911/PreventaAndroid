@@ -3,13 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="inteldev.android.presentation.MainActivity" >
     
-    <item android:id="@+id/MenuOpcionLogin"
-        android:title="Login"
+    <!--<item android:id="@+id/MenuOpcionLogin"-->
+        <!--android:title="Login"-->
+        <!--android:orderInCategory="100"-->
+        <!--app:showAsAction="never" />-->
+
+    <item android:id="@+id/MenuOpcionRecibir"
+        android:title="@string/recibir"
         android:orderInCategory="100"
         app:showAsAction="never" />
 
-    <item android:id="@+id/MenuOpcionRecibir"
-        android:title="Recibir"
+    <item android:id="@+id/MenuCerrarSesion"
+        android:title="@string/cerrar_sesi_n"
         android:orderInCategory="100"
         app:showAsAction="never" />
+
 </menu>

@@ -50,8 +50,6 @@ public class ControladorArticulo extends ControladorBaseNegocio
     public Articulo buscarArticuloPorBarras(String barra)
     {
         Articulo articulo = null;
-        //todo
-
         Cursor cursor = dao.ejecutarConsultaSql("select idArticulo from barras where barcode='" + barra + "'");
         if (cursor.moveToFirst())
         {
@@ -173,6 +171,27 @@ public class ControladorArticulo extends ControladorBaseNegocio
         return articuloDescuentos;
     }
 
+    public ArrayList<ArticuloDescuento> obtenerDescuentosMayorista(String idClienteSeleccionado)
+    {
+        ArrayList<ArticuloDescuento> articuloDescuentos = new ArrayList<>();
+        String query = "select art.idarticulo, art.nombre, db.porcentaje, dl.precio*db.porcentaje/100, cb.fhasta, alcance.idcabbonif  from detbonif db  inner join cabbonif cb on cb.idcabbonif=db.idcabbonif  inner join articulos art on (db.idlinea=art.idlinea and db.idrubro='' and db.idarticulo='') or (db.idarticulo=art.idarticulo and db.idlinea='' and db.idrubro='') or (db.idrubro=art.idrubro and db.idarticulo='' and db.idlinea='')  inner join clientes c on c.idCliente=alcance.idCliente  inner join detlistas dl on dl.articulo=art.idarticulo  inner join alcance on alcance.idcabbonif=cb.idcabbonif  where alcance.idcliente='" + idClienteSeleccionado + "' and  dl.idlista='02068' order by art.idarticulo";
+        Cursor cursor = dao.ejecutarConsultaSql(query);
+        while (cursor.moveToNext())
+        {
+            ArticuloDescuento articuloDescuento = new ArticuloDescuento();
+            articuloDescuento.setIdArticulo(cursor.getString(0));
+            articuloDescuento.setNombre(cursor.getString(1));
+            articuloDescuento.setPorcentaje(cursor.getFloat(2));
+            articuloDescuento.setPrecio(cursor.getFloat(3));
+            String fecha = cursor.getString(4);
+            articuloDescuento.setVencimiento(Fecha.convertir(fecha));
+            articuloDescuento.setIdCabBonif(cursor.getString(5));
+            articuloDescuentos.add(articuloDescuento);
+        }
+
+        return articuloDescuentos;
+    }
+
     public ArrayList<ArticuloSinCargo> obtenerSinCargos(String idClienteSeleccionado)
     {
         ArrayList<ArticuloSinCargo> articuloSinCargos = new ArrayList<>();
@@ -191,4 +210,13 @@ public class ControladorArticulo extends ControladorBaseNegocio
         return articuloSinCargos;
     }
 
+    public ArrayList<Articulo> obtenerFolder()
+    {
+        ArrayList<Articulo> articulos = new ArrayList<>();
+        String query = "select articulos.* from articulos inner join detlistas on Articulos.idArticulo = detListas.articulo where detListas.folder>0 order by Articulos.nombre";
+        Cursor cursor = dao.ejecutarConsultaSql(query);
+        Mapeador<Articulo> mapeador = new Mapeador<>(new Articulo());
+        articulos = mapeador.cursorToList(cursor);
+        return articulos;
+    }
 }

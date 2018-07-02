@@ -21,8 +21,8 @@ import inteldev.android.accesoadatos.IDao;
 import inteldev.android.negocios.DescargaClient;
 import inteldev.android.negocios.EstadoWebService;
 import inteldev.android.negocios.FabricaNegocios;
-import inteldev.android.negocios.Fecha;
 import inteldev.android.negocios.IncorporaXml;
+import inteldev.android.negocios.SharedPreferencesManager;
 import inteldev.android.negocios.ServiceRegistry;
 import inteldev.android.negocios.WebServiceHelper;
 
@@ -50,7 +50,6 @@ public class Recibir extends Activity
         {
             loginUsuario = getIntent().getStringExtra(USUARIO_KEY);
         }
-
         botonClicked = false;
         btnRecibir();
     }
@@ -76,7 +75,7 @@ public class Recibir extends Activity
                             @Override
                             public void Neutral()
                             {
-
+                                botonClicked = false;
                             }
                         }).show();
                     }
@@ -84,10 +83,9 @@ public class Recibir extends Activity
                     {
 
                         notifico = false;
-
                         dialogoProgresoRecibir = ProgressDialog.show(Recibir.this, "", "Recibiendo. Por favor espere...", true);
 
-                        final DescargaClient clienteDescarga = new DescargaClient(getApplicationContext(), loginUsuario);
+                        final DescargaClient clienteDescarga = new DescargaClient(Recibir.this, loginUsuario);
 
                         if (clienteDescarga.estadoWebService == EstadoWebService.Estado.NoDisponible)
                         {
@@ -110,40 +108,45 @@ public class Recibir extends Activity
                                 dialogoProgresoRecibir.cancel();
                                 if (estado == true)
                                 {
-
                                     if (notifico == false)
                                     {
                                         IDao dao = FabricaNegocios.obtenerDao(getApplicationContext());
-                                        long res = dao.delete("PosicionesGPS", " fecha<" + Fecha.obtenerFechaActual() + " and enviado=1");
-                                        Log.d("RECIBIR", String.valueOf(res));
+                                        long res = dao.delete("PosicionesGPS", "enviado=?", new String[]{"1"});
+                                        Log.d("Borrando", "PosGPS -> " + String.valueOf(res) + " filas.");
+                                        res = dao.delete("CabOper", "enviado = ?", new String[]{"1"});
+                                        Log.d("Borrando", "CabOper -> " + String.valueOf(res) + " filas.");
+                                        res = dao.delete("DetOper", "enviado = ?", new String[]{"1"});
+                                        Log.d("Borrando", "DetOper -> " + String.valueOf(res) + " filas.");
+                                        res = dao.delete("OferOper", "enviado = ?", new String[]{"1"});
+                                        Log.d("Borrando", "OferOper -> " + String.valueOf(res));
+
                                         IncorporaXml incorporaXml = new IncorporaXml();
                                         incorporaXml.incorporar(getApplicationContext());
 
-                                        String imei = FabricaNegocios.obtenerImei(getApplicationContext());
+                                        String imei = SharedPreferencesManager.getImei(getApplicationContext());
 
                                         ServiceRegistry serviceRegistry = new ServiceRegistry(getApplicationContext(), loginUsuario);
                                         WebServiceHelper webServiceHelper = serviceRegistry.getWebServiceHelper();
-
+                                        SoapObject respuesta;
                                         if (clienteDescarga.estadoWebService == EstadoWebService.Estado.ConexionLocal)
                                         {
-                                            SoapObject respuesta = webServiceHelper.executeService("actualizaFechaDownload");
+                                            respuesta = webServiceHelper.executeService("actualizaFechaDownload");
                                         }
                                         else
                                         {
-                                            SoapObject respuesta = webServiceHelper.executeService("actualizaFechaDownloadRemoto");
+                                            respuesta = webServiceHelper.executeService("actualizaFechaDownloadRemoto");
                                         }
-
+                                        Log.d("Recibir", "actualizaFechaDownload - " + respuesta.toString());
                                         notifico = true;
                                         FabricaMensaje.dialogoOk(Recibir.this, "informacion".toUpperCase(), "Datos recibidos.", new DialogoAlertaNeutral()
                                         {
                                             @Override
                                             public void Neutral()
                                             {
-
+                                                botonClicked = false;
                                             }
                                         }).show();
                                     }
-
                                 }
                                 else
                                 {
@@ -155,12 +158,11 @@ public class Recibir extends Activity
                                             @Override
                                             public void Neutral()
                                             {
+                                                botonClicked = false;
                                             }
                                         }).show();
                                     }
-
                                 }
-
                             }
                         });
                     }
@@ -187,27 +189,27 @@ public class Recibir extends Activity
         super.onBackPressed();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.recibir, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings)
-        {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu)
+//    {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.recibir, menu);
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item)
+//    {
+//        // Handle action bar item clicks here. The action bar will
+//        // automatically handle clicks on the Home/Up button, so long
+//        // as you specify a parent activity in AndroidManifest.xml.
+//        int id = item.getItemId();
+//        if (id == R.id.action_settings)
+//        {
+//            return true;
+//        }
+//        return super.onOptionsItemSelected(item);
+//    }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig)
@@ -215,4 +217,5 @@ public class Recibir extends Activity
         super.onConfigurationChanged(newConfig);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
+
 }

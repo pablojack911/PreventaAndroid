@@ -171,4 +171,9 @@ public class ControladorOferta extends ControladorBaseNegocio
 
         return cursor;
     }
+
+    public ArrayList<OferEsp> obtenerOfertasMayorista(String idClienteSeleccionado)
+    {
+        return new ArrayList<>();
+    }
 }

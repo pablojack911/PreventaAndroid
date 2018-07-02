@@ -40,7 +40,8 @@ public class FragmentDescuentos extends Fragment
         Bundle args = getArguments();
         idClienteSeleccionado = args.getString(ID_CLIENTE_SELECCIONADO);
 
-        ArrayList<ArticuloDescuento> mArticuloDescuentos = controladorArticulo.obtenerDescuentos(idClienteSeleccionado);
+        ArrayList<ArticuloDescuento> mArticuloDescuentos = controladorArticulo.obtenerDescuentosMayorista(idClienteSeleccionado);
+//        ArrayList<ArticuloDescuento> mArticuloDescuentos = controladorArticulo.obtenerDescuentos(idClienteSeleccionado);
         ListView lvArticulosDescuento = (ListView) rootView.findViewById(R.id.lvArticulosDescuento);
 //        lvArticulosDescuento.setAdapter(new AdaptadorListaGenerico(container.getContext(), R.layout.simple_list_articulo_dto, mArticuloDescuentos)
         lvArticulosDescuento.setAdapter(new AdaptadorListaGenerico(getActivity(), R.layout.simple_list_articulo_dto, mArticuloDescuentos)

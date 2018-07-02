@@ -44,6 +44,31 @@ public class FabricaMensaje extends DialogFragment
         return alertDialog;
     }
 
+    public static AlertDialog.Builder dialogoAlertaPrecarga(Context context, String titulo, String mensaje, final DialogoAlertaSiNo dialogoAlertaSiNo)
+    {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+        alertDialog.setTitle(titulo.toUpperCase());
+        alertDialog.setMessage(mensaje);
+        alertDialog.setPositiveButton("CREAR NUEVA", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                dialogoAlertaSiNo.Positivo();
+            }
+        });
+        alertDialog.setNegativeButton("SEGUIR EN LA MISMA", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                dialogoAlertaSiNo.Negativo();
+            }
+        });
+        alertDialog.setCancelable(false);
+        return alertDialog;
+    }
+
     public static AlertDialog.Builder dialogoOk(Context context, String titulo, String mensaje, final DialogoAlertaNeutral dialogoAlerta)
     {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);

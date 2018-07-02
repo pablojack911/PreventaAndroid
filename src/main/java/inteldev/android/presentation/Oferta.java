@@ -33,6 +33,7 @@ import inteldev.android.negocios.ControladorOferta;
 import inteldev.android.negocios.ControladorPrecio;
 import inteldev.android.negocios.ControladorStock;
 import inteldev.android.negocios.FabricaNegocios;
+import inteldev.android.negocios.SharedPreferencesManager;
 import inteldev.android.presentation.vistaModelo.OferOperOfertas;
 
 import static inteldev.android.CONSTANTES.CLAVE_UNICA_CABOPER;
@@ -96,7 +97,6 @@ public class Oferta extends FragmentActivity
     Dialog dialogoCantidad;
 
     int rowIdSeleccionado;
-    private String loginUsuario;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -117,12 +117,6 @@ public class Oferta extends FragmentActivity
         {
             claveUnicaCabOper = intent.getStringExtra(CLAVE_UNICA_CABOPER);
         }
-        loginUsuario = LoginObservable.getInstancia().getLoginUsuario();
-//        if (intent.hasExtra(USUARIO_KEY))
-//        {
-//            loginUsuario = intent.getStringExtra(USUARIO_KEY);
-//        }
-
         controladorOferta = FabricaNegocios.obtenerControladorOferta(getApplicationContext());
         controladorPrecio = FabricaNegocios.obtenerControladorPrecio(getApplicationContext());
         controladorConvenio = FabricaNegocios.obtenerControladorConvenio(getApplicationContext(), idClienteSeleccionado);
@@ -133,19 +127,19 @@ public class Oferta extends FragmentActivity
         ofer_detsBase = controladorOferta.obtenerArticulosOferta(codigoOferta, "BASE");
         ofer_detsBonificada = controladorOferta.obtenerArticulosOferta(codigoOferta, "BONIFICADA");
 
-        edtCodigoArticuloOferta = (EditText) findViewById(R.id.edtCodigoArticuloOferta);
-        edtArticuloOferta = (EditText) findViewById(R.id.edtArticuloOferta);
+        edtCodigoArticuloOferta = findViewById(R.id.edtCodigoArticuloOferta);
+        edtArticuloOferta = findViewById(R.id.edtArticuloOferta);
 
-        edtUnitarioOferta = (EditText) findViewById(R.id.edtUnitarioOferta);
-        edtCantidadOferta = (EditText) findViewById(R.id.edtCantidadOferta);
-        edtDescuentoOferta = (EditText) findViewById(R.id.edtDescuentoOferta);
-        edtFinalOferta = (EditText) findViewById(R.id.edtFinalOferta);
+        edtUnitarioOferta = findViewById(R.id.edtUnitarioOferta);
+        edtCantidadOferta = findViewById(R.id.edtCantidadOferta);
+        edtDescuentoOferta = findViewById(R.id.edtDescuentoOferta);
+        edtFinalOferta = findViewById(R.id.edtFinalOferta);
 
-        edtTotalOferta = (EditText) findViewById(R.id.edtTotalOferta);
+        edtTotalOferta = findViewById(R.id.edtTotalOferta);
 
-        btnOkOferta = (Button) findViewById(R.id.btnOkOferta);
-        btnContinuar = (Button) findViewById(R.id.btnContinuarOferta);
-        spTipoParteOferta = (Spinner) findViewById(R.id.spTipoParteOferta);
+        btnOkOferta = findViewById(R.id.btnOkOferta);
+        btnContinuar = findViewById(R.id.btnContinuarOferta);
+        spTipoParteOferta = findViewById(R.id.spTipoParteOferta);
 
         oferOpers = new ArrayList<OferOperOfertas>();
 
@@ -170,14 +164,16 @@ public class Oferta extends FragmentActivity
     {
         if (requestCode == INTENT_DETALLE_OFERTA_NO_CONFIRMADA)
         {
-            if (resultCode == Activity.RESULT_OK)
+            if (resultCode == Activity.RESULT_CANCELED)
             {
                 oferOpers = data.getParcelableArrayListExtra("oferOpers");
                 calcularTotal(oferOpers);
             }
-            if (resultCode == Activity.RESULT_CANCELED)
+            if (resultCode == Activity.RESULT_OK)
             {
-                Oferta.this.finish();
+                Intent intent = new Intent();
+                setResult(Activity.RESULT_OK, intent);
+                finish();
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -289,7 +285,7 @@ public class Oferta extends FragmentActivity
 
     private void btnContinuarOferta(final Oferta oferta)
     {
-        btnContinuar = (Button) findViewById(R.id.btnContinuarOferta);
+        btnContinuar = findViewById(R.id.btnContinuarOferta);
         btnContinuar.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -371,7 +367,7 @@ public class Oferta extends FragmentActivity
 
     private void btnMasOferta(Context context)
     {
-        Button btnMasOferta = (Button) findViewById(R.id.btnMasOferta);
+        Button btnMasOferta = findViewById(R.id.btnMasOferta);
 
         btnMasOferta.setOnClickListener(new View.OnClickListener()
         {
@@ -391,7 +387,7 @@ public class Oferta extends FragmentActivity
 
     private void btnMenosOferta(Context context)
     {
-        Button btnMenosOferta = (Button) findViewById(R.id.btnMenosOferta);
+        Button btnMenosOferta = findViewById(R.id.btnMenosOferta);
 
         btnMenosOferta.setOnClickListener(new View.OnClickListener()
         {
@@ -420,8 +416,8 @@ public class Oferta extends FragmentActivity
     private void edtArticuloOferta(Oferta oferta)
     {
 
-        final EditText edtArticuloOferta = (EditText) findViewById(R.id.edtArticuloOferta);
-        final Spinner spArticuloDeLaOferta = (Spinner) findViewById(R.id.spArticuloDeLaOferta);
+        final EditText edtArticuloOferta = findViewById(R.id.edtArticuloOferta);
+        final Spinner spArticuloDeLaOferta = findViewById(R.id.spArticuloDeLaOferta);
 
         edtArticuloOferta.addTextChangedListener(new TextWatcher()
         {
@@ -500,7 +496,7 @@ public class Oferta extends FragmentActivity
     private void spArticulo(final Context context, final ArrayList<Ofer_Det> ofer_dets)
     {
 
-        Spinner spArticuloDeLaOferta = (Spinner) findViewById(R.id.spArticuloDeLaOferta);
+        Spinner spArticuloDeLaOferta = findViewById(R.id.spArticuloDeLaOferta);
 
         spArticuloDeLaOferta.setAdapter(new AdaptadorListaGenerico(context, android.R.layout.simple_spinner_item, ofer_dets)
         {
@@ -508,7 +504,7 @@ public class Oferta extends FragmentActivity
             public void onEntrada(Object entrada, View view)
             {
 
-                TextView tvArticuloDeLaOferta = (TextView) view.findViewById(android.R.id.text1);
+                TextView tvArticuloDeLaOferta = view.findViewById(android.R.id.text1);
 
                 String articuloDeLaOferta = ((Ofer_Det) entrada).getArticulo();
 
@@ -530,15 +526,15 @@ public class Oferta extends FragmentActivity
             {
                 if (ofer_dets.size() > 0)
                 {
-                    edtCodigoArticuloOferta = (EditText) findViewById(R.id.edtCodigoArticuloOferta);
+                    edtCodigoArticuloOferta = findViewById(R.id.edtCodigoArticuloOferta);
                     edtCodigoArticuloOferta.setText(ofer_dets.get(i).getArticulo());
 
                     Float unitario = controladorPrecio.obtener(context, idClienteSeleccionado, ofer_dets.get(i).getArticulo().trim());
 
-                    edtUnitarioOferta = (EditText) findViewById(R.id.edtUnitarioOferta);
+                    edtUnitarioOferta = findViewById(R.id.edtUnitarioOferta);
                     edtUnitarioOferta.setText(unitario.toString());
 
-                    EditText edtDescuentoOferta = (EditText) findViewById(R.id.edtDescuentoOferta);
+                    EditText edtDescuentoOferta = findViewById(R.id.edtDescuentoOferta);
 
                     if (spTipoParteOferta.getSelectedItem().toString().equals("BONIFICADA"))
                     {

@@ -3,12 +3,13 @@ package inteldev.android.presentation;
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import inteldev.android.R;
 
-public class ArticulosOferta extends Activity
+public class ArticulosOferta extends AppCompatActivity
 {
 
     @Override

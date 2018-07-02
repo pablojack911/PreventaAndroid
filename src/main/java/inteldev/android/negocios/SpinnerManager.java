@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 
+import inteldev.android.R;
 import inteldev.android.accesoadatos.Dao;
 
 /**
@@ -38,7 +39,7 @@ public class SpinnerManager<T>
         String[] from = new String[]{campo};
         int[] to = new int[]{android.R.id.text1};
 
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(context, android.R.layout.simple_spinner_item, cursor, from, to,0 );
+        SimpleCursorAdapter adapter = new SimpleCursorAdapter(context, R.layout.simple_spinner_item, cursor, from, to,0 );
         adapter.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item );
         spinner.setAdapter(adapter);
 

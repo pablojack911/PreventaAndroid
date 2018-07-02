@@ -1,48 +1,47 @@
 package inteldev.android.presentation;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.ksoap2.serialization.SoapObject;
 
+import inteldev.android.CONSTANTES;
 import inteldev.android.R;
 import inteldev.android.accesoadatos.IDao;
 import inteldev.android.modelo.EstadoGPS;
 import inteldev.android.modelo.PosicionesGPS;
 import inteldev.android.negocios.CursorToXml;
-import inteldev.android.negocios.EnviarEstadosGeoLocalizacion;
 import inteldev.android.negocios.EstadoWebService;
 import inteldev.android.negocios.FabricaNegocios;
-import inteldev.android.negocios.Fecha;
+import inteldev.android.negocios.SharedPreferencesManager;
 import inteldev.android.negocios.ServiceRegistry;
 import inteldev.android.negocios.WebServiceHelper;
-import inteldev.android.presentation.ViewPager.ClienteCollection;
 import inteldev.android.servicios.GPSIntentService;
-import inteldev.android.servicios.ServiceGeolocation;
+import inteldev.android.servicios.GPSLocationService;
 
-import static inteldev.android.CONSTANTES.ID_CLIENTE_SELECCIONADO;
-import static inteldev.android.CONSTANTES.ID_VENDEDOR_KEY;
-import static inteldev.android.CONSTANTES.INTENT_LOGIN;
-import static inteldev.android.CONSTANTES.PASSWORD_KEY;
+import static inteldev.android.CONSTANTES.PERMISSIONS;
 import static inteldev.android.CONSTANTES.POSICION_GPS_KEY;
-import static inteldev.android.CONSTANTES.USUARIO_KEY;
+import static inteldev.android.CONSTANTES.REQUEST_CHECK_SETTINGS;
 
-public class MainActivity extends FragmentActivity implements OnLoginListener
+public class MainActivity extends AppCompatActivity
 {
-    public static String loginUsuario = "";
-    public static String loginIdVendedor = "";
-    public static String loginPass = "";
-    public Context context;
+    //    public static String loginUsuario = "";
+//    public static String loginIdVendedor = "";
+//    public static String loginPass = "";
     private ConnectivityManager connectivityManager;
 
     @Override
@@ -50,34 +49,57 @@ public class MainActivity extends FragmentActivity implements OnLoginListener
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        enable_buttons();
-        Button btn = (Button) findViewById(R.id.btnPOCHO);
-        btn.setOnClickListener(new View.OnClickListener()
+
+        if (!Utiles.hasPermissions(this, PERMISSIONS))
         {
-            @Override
-            public void onClick(View v)
-            {
-                Intent intent = new Intent(MainActivity.this, ClienteCollection.class);
-                intent.putExtra(ID_CLIENTE_SELECCIONADO, "90000");
-                startActivity(intent);
-            }
-        });
-        updateValuesFromBundle(savedInstanceState);
+            ActivityCompat.requestPermissions(this, PERMISSIONS, REQUEST_CHECK_SETTINGS);
+        }
+        bindUI();
     }
 
-    protected void updateValuesFromBundle(Bundle savedInstanceState)
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
     {
-//        super.updateValuesFromBundle(savedInstanceState);
-        if (savedInstanceState != null)
+        switch (requestCode)
         {
-            if (savedInstanceState.keySet().contains(PASSWORD_KEY))
-            {
-                loginPass = savedInstanceState.getString(PASSWORD_KEY);
-            }
-            if (savedInstanceState.keySet().contains(ID_VENDEDOR_KEY))
-            {
-                loginIdVendedor = savedInstanceState.getString(ID_VENDEDOR_KEY);
-            }
+            case CONSTANTES.REQUEST_CHECK_SETTINGS:
+                if (grantResults.length > 0)
+                {
+                    for (int res : grantResults)
+                    {
+                        if (res != PackageManager.PERMISSION_GRANTED)
+                        {
+                            ActivityCompat.requestPermissions(this, PERMISSIONS, REQUEST_CHECK_SETTINGS);
+                        }
+                    }
+                }
+            case CONSTANTES.REQUEST_STORAGE_PERMISSION:
+                if (grantResults.length > 0)
+                {
+                    if (grantResults[0] != PackageManager.PERMISSION_GRANTED || grantResults[1] != PackageManager.PERMISSION_GRANTED)
+                    {
+                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, CONSTANTES.REQUEST_STORAGE_PERMISSION);
+                    }
+                }
+                break;
+            case CONSTANTES.REQUEST_LOCATION_PERMISSION:
+                if (grantResults.length > 0)
+                {
+                    if (grantResults[0] != PackageManager.PERMISSION_GRANTED || grantResults[1] != PackageManager.PERMISSION_GRANTED)
+                    {
+                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, CONSTANTES.REQUEST_LOCATION_PERMISSION);
+                    }
+                }
+                break;
+            case CONSTANTES.REQUEST_PHONE_STATE_PERMISSION:
+                if (grantResults.length > 0)
+                {
+                    if (grantResults[0] != PackageManager.PERMISSION_GRANTED)
+                    {
+                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, CONSTANTES.REQUEST_PHONE_STATE_PERMISSION);
+                    }
+                }
+                break;
         }
     }
 
@@ -87,56 +109,34 @@ public class MainActivity extends FragmentActivity implements OnLoginListener
         super.onResume();
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState)
+    private void bindUI()
     {
-        outState.putString(USUARIO_KEY, loginUsuario);
-        outState.putString(PASSWORD_KEY, loginPass);
-        outState.putString(ID_VENDEDOR_KEY, loginIdVendedor);
-        super.onSaveInstanceState(outState);
-    }
-
-    private void enable_buttons()
-    {
-        LoginObservable.getInstancia().setOnLoginListener(this);
-
-        btnVentas(this);
-
-        btnEnviar(this);
-
-        context = this;
-
-        System.setProperty("http.keepAlive", "true");
+        btnVentas();
+        btnEnviar();
+        enableButtons(SharedPreferencesManager.isLogin(MainActivity.this));
     }
 
     @Override
     public void onBackPressed()
     {
-        if (loginUsuario != null && !loginUsuario.equals(""))
+        if (SharedPreferencesManager.isLogin(MainActivity.this))
         {
-            FabricaMensaje.dialogoAlertaSiNo(context, "¡Atencion!", "¿Seguro que desea salir?", new DialogoAlertaSiNo()
+            FabricaMensaje.dialogoAlertaSiNo(MainActivity.this, "¡Atencion!", "¿Seguro que desea salir?", new DialogoAlertaSiNo()
             {
                 @Override
                 public void Positivo()
                 {
                     PosicionesGPS posicionesGPS = new PosicionesGPS();
-                    posicionesGPS.usuario = loginUsuario;
+                    posicionesGPS.usuario = SharedPreferencesManager.getLoginUsuario(MainActivity.this);
                     posicionesGPS.estado = EstadoGPS.DESLOGUEADO;
                     posicionesGPS.idCliente = "00000";
 
                     Intent mServiceIntent = new Intent(MainActivity.this, GPSIntentService.class);
                     mServiceIntent.putExtra(POSICION_GPS_KEY, posicionesGPS);
                     MainActivity.this.startService(mServiceIntent);
+                    SharedPreferencesManager.setLogin(MainActivity.this, false);
 
-                    EnviarEstadosGeoLocalizacion enviarEstadosGeoLocalizacion = new EnviarEstadosGeoLocalizacion();
-                    enviarEstadosGeoLocalizacion.enviarEstadosGeoLocalizacion(getApplicationContext());
-
-                    Intent intent = new Intent(MainActivity.this, ServiceGeolocation.class);
-                    stopService(intent);
-
-//                    finishAffinity();
-
-                    finishAndRemoveTask();
+                    finishAffinity();
                 }
 
                 @Override
@@ -148,7 +148,7 @@ public class MainActivity extends FragmentActivity implements OnLoginListener
         }
         else
         {
-            finish();
+            finishAffinity();
         }
     }
 
@@ -156,68 +156,19 @@ public class MainActivity extends FragmentActivity implements OnLoginListener
     protected void onDestroy()
     {
         super.onDestroy();
-        android.os.Process.killProcess(android.os.Process.myPid());
     }
-//    protected void enviarPosicion()
-//    {
-//        PosicionesGPS posicionesGPS = new PosicionesGPS();
-//        posicionesGPS.imei = FabricaNegocios.obtenerImei(this);
-//        posicionesGPS.fecha = Fecha.obtenerFechaHoraActual();
-//        posicionesGPS.usuario = loginUsuario;
-//
-//        Intent mServiceIntent = new Intent(this, GPSIntentService.class);
-//        mServiceIntent.putExtra(POSICION_GPS_KEY, posicionesGPS);
-//        this.startService(mServiceIntent);
-//    }
 
-    //    @Override
-//    public boolean onKeyDown(int keyCode, KeyEvent event)
-//    {
-//        if (keyCode == KeyEvent.KEYCODE_BACK && loginUsuario != null || loginUsuario != "")
-//        {
-//            FabricaMensaje.dialogoAlertaSiNo(context, "¡Atencion!", "¿Seguro que desea salir?", new DialogoAlertaSiNo()
-//            {
-//                @Override
-//                public void Positivo()
-//                {
-////                    PosicionesGPS posicionesGPS = controladorPosicionesGPS.creaPosicion(getApplicationContext(), MainActivity.loginUsuario, EstadoGPS.DESLOGUEADO, MotivoNoCompra.COMPRADOR, "00000", 0, 0);
-////                    controladorPosicionesGPS.insertar(posicionesGPS);
-////                    EnviarEstadosGeoLocalizacion enviarEstadosGeoLocalizacion = new EnviarEstadosGeoLocalizacion();
-////                    enviarEstadosGeoLocalizacion.enviarEstadosGeoLocalizacion(getApplicationContext(), loginUsuario);
-////
-////                    Intent intent = new Intent(MainActivity.this, ServiceGeolocation.class);
-////                    stopService(intent);
-//
-//                    finishAffinity();
-//                    Process.killProcess(Process.myPid());
-//                }
-//
-//                @Override
-//                public void Negativo()
-//                {
-//
-//                }
-//            }).show();
-//
-//            return true;
-//        }
-//        return super.onKeyDown(keyCode, event);
-//
-//    }
-
-    private void btnEnviar(final Context context)
+    private void btnEnviar()
     {
-
-        Button btnEnviar = (Button) findViewById(R.id.btnEnviar);
-
+        Button btnEnviar = findViewById(R.id.btnEnviar);
         btnEnviar.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view)
             {
 
+                String loginUsuario = SharedPreferencesManager.getLoginUsuario(MainActivity.this);
                 connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-
                 if (!FabricaNegocios.obtenerEstadoConexion(connectivityManager).Conectado())
                 {
                     FabricaMensaje.dialogoOk(MainActivity.this, "Sin Conexion", "No dispone de conexion 3G o Wifi", new DialogoAlertaNeutral()
@@ -225,31 +176,22 @@ public class MainActivity extends FragmentActivity implements OnLoginListener
                         @Override
                         public void Neutral()
                         {
-
                         }
                     }).show();
                 }
-
                 else
                 {
-
                     EstadoWebService.Estado estadoWebService;
-
                     String servicioSubirDatosMobile;
-
-                    EstadoWebService oEstadoWebService = FabricaNegocios.obtenerEstadoWebService(context, loginUsuario);
-
+                    EstadoWebService oEstadoWebService = FabricaNegocios.obtenerEstadoWebService(MainActivity.this, loginUsuario);
                     estadoWebService = oEstadoWebService.verificarConexionServicio("hola", "holaRemoto");
-
                     if (estadoWebService == EstadoWebService.Estado.NoDisponible)
                     {
-
                         FabricaMensaje.dialogoOk(MainActivity.this, "Verifique!", "Servicio Web no disponible", new DialogoAlertaNeutral()
                         {
                             @Override
                             public void Neutral()
                             {
-
                             }
                         }).show();
                         return;
@@ -265,72 +207,44 @@ public class MainActivity extends FragmentActivity implements OnLoginListener
                             servicioSubirDatosMobile = "subirDatosMobile3Remoto";
                         }
                     }
-
-                    IDao dao = FabricaNegocios.obtenerDao(context);
+                    IDao dao = FabricaNegocios.obtenerDao(MainActivity.this);
 
                     CursorToXml cursorToXml = new CursorToXml("NewDataSet");
-
-                    Cursor cursorCabOper = dao.ejecutarConsultaSql("select claveUnica," +
-                            "idOperacion," +
-                            "idCliente," +
-                            "fecha," +
-                            "fechaEntrega," +
-                            "domicilio," +
-                            "enviado," +
-                            "idvendedor as idvendedor from cabOper" +
-                            " where enviado = 0" +
-                            " or  caboper.claveunica in (select detoper.claveunica from detoper where enviado = 0)");
+                    String queryCabOper = "select claveUnica," + "idOperacion," + "idCliente," + "fecha," + "fechaEntrega," + "domicilio," + "enviado," + "idvendedor as idvendedor from cabOper" + " where enviado = 0" + " or  caboper.claveunica in (select detoper.claveunica from detoper where enviado = 0)";
+                    Cursor cursorCabOper = dao.ejecutarConsultaSql(queryCabOper);
 
                     if (cursorCabOper.getCount() == 0)
                     {
-                        FabricaMensaje.dialogoOk(context, "Información", "No hay datos a enviar", new DialogoAlertaNeutral()
+                        FabricaMensaje.dialogoOk(MainActivity.this, "Información", "No hay datos a enviar", new DialogoAlertaNeutral()
                         {
                             @Override
                             public void Neutral()
                             {
-
                             }
                         }).show();
                     }
                     else
                     {
-
                         cursorToXml.AgregarTabla(cursorCabOper, "CabOper");
 
-                        Cursor cursorDetOper = dao.ejecutarConsultaSql("select claveUnica," +
-                                "idArticulo," +
-                                "precio," +
-                                "descuento," +
-                                "entero," +
-                                "fraccion," +
-                                "enviado," +
-                                "idFila as idfila," +
-                                "0 as sincargo from detOper" +
-                                " where enviado = 0");
+                        String queryDetOper = "select claveUnica," + "idArticulo," + "precio," + "descuento," + "entero," + "fraccion," + "enviado," + "idFila as idfila," + "0 as sincargo from detOper" + " where enviado = 0";
+                        Cursor cursorDetOper = dao.ejecutarConsultaSql(queryDetOper);
                         cursorToXml.AgregarTabla(cursorDetOper, "DetOper");
 
-                        Cursor cursorOferOper = dao.ejecutarConsultaSql("select claveunica as claveunica, " +
-                                "idFila as idfila," +
-                                "precio," +
-                                "idArticulo," +
-                                "descuento," +
-                                "cantidad," +
-                                "tipo from oferOper" +
-                                " where enviado = 0");
-
+                        String queryOferOper = "select claveunica as claveunica, " + "idFila as idfila," + "precio," + "idArticulo," + "descuento," + "cantidad," + "tipo from oferOper" + " where enviado = 0";
+                        Cursor cursorOferOper = dao.ejecutarConsultaSql(queryOferOper);
                         cursorToXml.AgregarTabla(cursorOferOper, "oferOper");
 
                         String xml = cursorToXml.GenerarXml();
                         xml = xml.substring(38, xml.length());
 
-
-                        String imei = FabricaNegocios.obtenerImei(context);
+                        String imei = SharedPreferencesManager.getImei(MainActivity.this);
 
                         // Llamar a webservice
-                        ServiceRegistry serviceRegistry = new ServiceRegistry(context, loginUsuario);
+                        ServiceRegistry serviceRegistry = new ServiceRegistry(MainActivity.this, loginUsuario);
                         WebServiceHelper webServiceHelper = serviceRegistry.getWebServiceHelper();
                         webServiceHelper.addMethodParameter(servicioSubirDatosMobile, "usuario", loginUsuario);
-                        webServiceHelper.addMethodParameter(servicioSubirDatosMobile, "clave", loginPass);
+                        webServiceHelper.addMethodParameter(servicioSubirDatosMobile, "clave", "");
                         webServiceHelper.addMethodParameter(servicioSubirDatosMobile, "imei", imei);
                         webServiceHelper.addMethodParameter(servicioSubirDatosMobile, "xmlDatos", xml);
 
@@ -343,43 +257,21 @@ public class MainActivity extends FragmentActivity implements OnLoginListener
                             dao.ejecutarSentenciaSql("update CabOper set enviado = 1 where enviado = 0");
                             dao.ejecutarSentenciaSql("update DetOper set enviado = 1 where enviado = 0");
                             dao.ejecutarSentenciaSql("update OferOper set enviado = 1 where enviado = 0");
-
-                            Cursor cursor = dao.ejecutarConsultaSql("select claveUnica from cabOper " +
-                                    " where fecha<'" + Fecha.sumarFechasDias(Fecha.obtenerFechaActual(), 0).toString() + "'");
-
-                            if (cursor != null && cursor.moveToFirst())
-                            {
-                                do
-                                {
-
-                                    String claveUnica = cursor.getString(0);
-
-                                    dao.delete("CabOper", "claveUnica = '" + claveUnica + "'");
-
-                                    Cursor cursorDetOperEnviado = dao.ejecutarConsultaSql("select idFila from DetOper" +
-                                            " where claveUnica='" + claveUnica + "'");
-
-                                    if (cursorDetOperEnviado != null && cursorDetOperEnviado.moveToFirst())
-                                    {
-
-                                        String idFila = cursorDetOperEnviado.getString(0);
-
-                                        dao.delete("DetOper", "claveUnica = '" + claveUnica + "'");
-                                        dao.delete("OferOper", "claveUnica = '" + idFila + "'");
-                                    }
-
-                                } while (cursor.moveToNext());
-                            }
-                            Toast.makeText(context, "Datos enviados", Toast.LENGTH_LONG).show();
-                        }
-                        else
-                        {
-                            FabricaMensaje.dialogoOk(context, "Informe a Sistemas", respuestaString, new DialogoAlertaNeutral()
+                            FabricaMensaje.dialogoOk(MainActivity.this, "informacion", "Datos enviados", new DialogoAlertaNeutral()
                             {
                                 @Override
                                 public void Neutral()
                                 {
-
+                                }
+                            }).show();
+                        }
+                        else
+                        {
+                            FabricaMensaje.dialogoOk(MainActivity.this, "Informe a Sistemas", respuestaString, new DialogoAlertaNeutral()
+                            {
+                                @Override
+                                public void Neutral()
+                                {
                                 }
                             }).show();
                         }
@@ -387,46 +279,41 @@ public class MainActivity extends FragmentActivity implements OnLoginListener
                 }
             }
         });
-
     }
 
-    private void btnVentas(Context context)
+    private void btnVentas()
     {
-        Button btnVentas = (Button) findViewById(R.id.btnVentas);
+        Button btnVentas = findViewById(R.id.btnVentas);
 
         btnVentas.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view)
             {
-                Intent intent = new Intent(getApplicationContext(), RutaDeVenta.class);
-                intent.putExtra(USUARIO_KEY, loginUsuario);
+                Intent intent = new Intent(MainActivity.this, RutaDeVenta.class);
                 startActivity(intent);
             }
         });
-
     }
 
-    public void OnLoginChange(boolean estado)
+    private void enableButtons(boolean conectado)
     {
-        Button btnVentas = (Button) findViewById(R.id.btnVentas);
-        Button btnEnviar = (Button) findViewById(R.id.btnEnviar);
+        Button btnVentas = findViewById(R.id.btnVentas);
+        Button btnEnviar = findViewById(R.id.btnEnviar);
 
-        btnVentas.setEnabled(estado);
-        btnEnviar.setEnabled(estado);
+        btnVentas.setEnabled(conectado);
+        btnEnviar.setEnabled(conectado);
 
-        TextView tvVendedor = (TextView) findViewById(R.id.tvVendedor);
+        TextView tvVendedor = findViewById(R.id.tvVendedor);
 
-        if (LoginObservable.getInstancia().isLogin())
+        if (conectado)
         {
-            loginUsuario = LoginObservable.getInstancia().getLoginUsuario();
-            Intent i = new Intent(MainActivity.this, ServiceGeolocation.class);
-            startService(i);
-            tvVendedor.setText("Usuario " + loginUsuario);
+            startService(new Intent(MainActivity.this, GPSLocationService.class));
+            tvVendedor.setText(String.format("Usuario %s", SharedPreferencesManager.getLoginUsuario(MainActivity.this)));
         }
         else
         {
-            tvVendedor.setText("NO ESTA LOGUEADO");
+            tvVendedor.setText(R.string.not_logged_in);
         }
     }
 
@@ -442,9 +329,8 @@ public class MainActivity extends FragmentActivity implements OnLoginListener
             @Override
             public boolean onMenuItemClick(MenuItem menuItem)
             {
-
-                Intent intent = new Intent(getApplicationContext(), Login.class);
-                startActivityForResult(intent, INTENT_LOGIN);
+                Intent intent = new Intent(MainActivity.this, Recibir.class);
+                startActivity(intent);
                 return true;
             }
         });
@@ -454,10 +340,11 @@ public class MainActivity extends FragmentActivity implements OnLoginListener
             @Override
             public boolean onMenuItemClick(MenuItem menuItem)
             {
-
-                Intent intent = new Intent(getApplicationContext(), Recibir.class);
+                SharedPreferencesManager.setLogin(MainActivity.this,false);
+                Intent intent = new Intent(MainActivity.this,LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
-
+                finish();
                 return true;
             }
         });
@@ -472,10 +359,6 @@ public class MainActivity extends FragmentActivity implements OnLoginListener
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings)
-        {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        return id == R.id.action_settings || super.onOptionsItemSelected(item);
     }
 }

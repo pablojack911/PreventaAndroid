@@ -13,6 +13,7 @@ public class DetLista extends BaseModel {
     public Date lastUpdate;
     public int borrado;
     public float descuento;
+    public float folder;
 
     public DetLista() {
         this.setKey("idLista");

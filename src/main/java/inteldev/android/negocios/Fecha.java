@@ -71,4 +71,9 @@ public class Fecha
         SimpleDateFormat format = new SimpleDateFormat(FORMATO_DIA_MES_AÑO);
         return format.format(fecha);
     }
+    public static String convertirFechaHora(Date fecha)
+    {
+        SimpleDateFormat format = new SimpleDateFormat(FORMATO_FECHA_COMPLETA);
+        return format.format(fecha);
+    }
 }

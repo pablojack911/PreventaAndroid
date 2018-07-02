@@ -1,0 +1,131 @@
+<inteldev.android.presentation.CheckedLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/tvCodigoArticulo"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Medium Text"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvArticulo"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Medium Text"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textStyle="bold" />
+
+    <GridLayout
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:columnCount="4"
+        android:rowCount="2">
+
+        <TextView
+            android:id="@+id/tvCantBultos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="0"
+            android:layout_row="0"
+            android:paddingEnd="5dp"
+            android:paddingStart="5dp"
+            android:text="@string/cantidad_bult"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <TextView
+            android:id="@+id/tvCantidadBultos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="1"
+            android:layout_row="0"
+            android:width="100dip"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/tvEtiquetaFraccion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="2"
+            android:layout_row="0"
+            android:paddingEnd="5dp"
+            android:paddingStart="5dp"
+            android:text="@string/cantidad_frac"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <TextView
+            android:id="@+id/tvCantidadFraccion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="3"
+            android:layout_row="0"
+            android:width="100dip"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <!--<TextView-->
+        <!--android:id="@+id/tvEtiquetaPrecio"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_column="2"-->
+        <!--android:layout_row="0"-->
+        <!--android:width="50dip"-->
+        <!--android:text="@string/unit_precio"-->
+        <!--android:textAppearance="?android:attr/textAppearanceSmall" />-->
+
+        <!--<TextView-->
+        <!--android:id="@+id/tvPrecio"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_column="3"-->
+        <!--android:layout_row="0"-->
+        <!--android:width="100dip"-->
+        <!--android:textAppearance="?android:attr/textAppearanceMedium" />-->
+
+        <TextView
+            android:id="@+id/tvEtiquetaDescuento"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="0"
+            android:layout_row="1"
+            android:paddingEnd="5dp"
+            android:paddingStart="5dp"
+            android:text="@string/descuento_porcentaje"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <TextView
+            android:id="@+id/tvDescuento"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="1"
+            android:layout_row="1"
+            android:width="100dip"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/tvEtiquetaFinal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="2"
+            android:layout_row="1"
+            android:paddingEnd="5dp"
+            android:paddingStart="5dp"
+            android:text="@string/total_pesos"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <TextView
+            android:id="@+id/tvFinal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="3"
+            android:layout_row="1"
+            android:width="100dip"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    </GridLayout>
+
+</inteldev.android.presentation.CheckedLinearLayout>
