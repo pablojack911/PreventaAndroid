@@ -14,6 +14,17 @@ import java.util.ArrayList;
 public abstract class AdaptadorListaGenerico extends BaseAdapter
 {
 
+    public ArrayList<?> getEntradas()
+    {
+        return entradas;
+    }
+
+    public void setEntradas(ArrayList<?> entradas)
+    {
+        this.entradas = entradas;
+        this.notifyDataSetChanged();
+    }
+
     private ArrayList<?> entradas;
     private int R_layout_Id_View;
     private Context contexto;

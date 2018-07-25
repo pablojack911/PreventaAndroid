@@ -9,6 +9,7 @@ import inteldev.android.accesoadatos.IDao;
 import inteldev.android.modelo.CabOper;
 import inteldev.android.modelo.DetOper;
 import inteldev.android.modelo.OferOper;
+import inteldev.android.presentation.Mayorista.PrecargaManager.Precarga;
 import inteldev.android.presentation.vistaModelo.DetallePedido;
 
 /**
@@ -50,7 +51,6 @@ public class ControladorPedido
 
         if (cursor != null && cursor.moveToFirst())
         {
-
             Mapeador<OferOper> oferOperMapeador = new Mapeador<OferOper>(new OferOper());
             oferOpers = oferOperMapeador.cursorToList(cursor);
         }
@@ -68,6 +68,38 @@ public class ControladorPedido
             listadetallePedido = detallePedidoMapeador.cursorToList(cursor);
         }
         return listadetallePedido;
+    }
+
+    public ArrayList<DetallePedido> consultarPedidos(String idCliente, String claveUnicaCabOper)
+    {
+        ArrayList<DetallePedido> listadetallePedido = new ArrayList<>();
+        Cursor cursor = dao.ejecutarConsultaSql("select cabOper.idCliente, cabOper.fecha, detOper.idArticulo, detOper.entero, detOper.fraccion, detOper.precio, detOper.descuento, detOper.idFila, detOper.oferta, detOper.claveUnica, detOper.unidadVenta from cabOper inner join detOper on detOper.claveUnica = cabOper.claveUnica where cabOper.idCliente = '" + idCliente + "' and cabOper.fecha = '" + Fecha.obtenerFechaActual().toString() + "' and cabOper.claveUnica='" + claveUnicaCabOper + "'");
+        if (cursor != null && cursor.moveToFirst())
+        {
+            Mapeador<DetallePedido> detallePedidoMapeador = new Mapeador<DetallePedido>(new DetallePedido());
+            listadetallePedido = detallePedidoMapeador.cursorToList(cursor);
+        }
+        return listadetallePedido;
+    }
+
+    public ArrayList<Precarga> consultarPrecargas(String idCliente)
+    {
+        Cursor cursor = dao.ejecutarConsultaSql("select caboper.rowid, detOper.claveUnica, sum((precio - (precio*(descuento/100)))*((entero * unidadVenta)+ fraccion))  as importeTotal from cabOper inner join detOper on detOper.claveUnica = cabOper.claveUnica where cabOper.idCliente = '" + idCliente + "' and cabOper.fecha = '" + Fecha.obtenerFechaActual() + "' group by detOper.claveUnica order by caboper.rowid");
+        ArrayList<Precarga> precargaArrayList = new ArrayList<>();
+        if (cursor != null && cursor.moveToFirst())
+        {
+            int i = 1;
+            do
+            {
+                Precarga precarga = new Precarga();
+                precarga.nombre = "PRECARGA " + i;
+                precarga.idCabOper = cursor.getString(1);
+                precarga.totalPrecarga = cursor.getFloat(2);
+                precargaArrayList.add(precarga);
+                i++;
+            } while (cursor.moveToNext());
+        }
+        return precargaArrayList;
     }
 
     public String obtenerArticuloPedido(String claveUnica)
@@ -133,22 +165,76 @@ public class ControladorPedido
         float total = 0f;
         for (DetallePedido pedido : detallePedidos)
         {
-            if (pedido.getOferta() != null && pedido.getOferta().length() > 0)
-            {
-                total += pedido.precio;
-            }
-            else
-            {
-                float precio = pedido.precio;
-                int bultos = pedido.entero;
-                int fracciones = pedido.fraccion;
-                int unidadVenta = pedido.unidadVenta;
-                int cantidad = bultos * unidadVenta + fracciones;
-                float descuento = pedido.descuento;
-                float importeDescuento = precio * (descuento / 100);
-                total += ((precio - importeDescuento) * cantidad);
-            }
+            total = calcularIntermedio(total, pedido);
+            //            if (pedido.getOferta() != null && pedido.getOferta().length() > 0)
+            //            {
+            //                total += pedido.precio;
+            //            }
+            //            else
+            //            {
+            //                float precio = pedido.precio;
+            //                int bultos = pedido.entero;
+            //                int fracciones = pedido.fraccion;
+            //                int unidadVenta = pedido.unidadVenta;
+            //                int cantidad = bultos * unidadVenta + fracciones;
+            //                float descuento = pedido.descuento;
+            //                float importeDescuento = precio * (descuento / 100);
+            //                total += ((precio - importeDescuento) * cantidad);
+            //            }
         }
         return total;
+    }
+
+    public float calcularTotal(String idClienteSeleccionado, String claveUnicaCabOper)
+    {
+        ArrayList<DetallePedido> detallePedidos = consultarPedidos(idClienteSeleccionado, claveUnicaCabOper);
+        float total = 0f;
+        for (DetallePedido pedido : detallePedidos)
+        {
+            total = calcularIntermedio(total, pedido);
+        }
+        return total;
+    }
+
+    private float calcularIntermedio(float total, DetallePedido pedido)
+    {
+        if (pedido.getOferta() != null && pedido.getOferta().length() > 0)
+        {
+            total += pedido.precio;
+        }
+        else
+        {
+            float precio = pedido.precio;
+            int bultos = pedido.entero;
+            int fracciones = pedido.fraccion;
+            int unidadVenta = pedido.unidadVenta;
+            int cantidad = bultos * unidadVenta + fracciones;
+            float descuento = pedido.descuento;
+            float importeDescuento = precio * (descuento / 100);
+            total += ((precio - importeDescuento) * cantidad);
+        }
+        return total;
+    }
+
+    public String crearNuevaPrecarga(String idCliente, String loginUsuario)
+    {
+        CabOper cabOper = new CabOper();
+        cabOper.claveUnica = java.util.UUID.randomUUID().toString();
+        cabOper.idOperacion = 1;
+        cabOper.idCliente = idCliente;
+        cabOper.fecha = Fecha.obtenerFechaActual();
+        cabOper.fechaEntrega = Fecha.obtenerFechaActual();
+        cabOper.idVendedor = loginUsuario;
+        cabOper.enviado = 0;
+        cabOper.domicilio = "";
+        grabarCabOper(cabOper);
+        return cabOper.claveUnica;
+    }
+
+    public boolean existeEnPrecarga(String claveUnicaCabOper, String idArticulo)
+    {
+        String query = "select detOper.idArticulo from detoper where detOper.claveUnica='" + claveUnicaCabOper + "' and detOper.idArticulo='" + idArticulo + "' union select oferOper.idArticulo from oferOper inner join detOper on detOper.idFila=oferOper.claveunica where detOper.claveunica='" + claveUnicaCabOper + "' and oferOper.idArticulo='" + idArticulo + "'";
+        Cursor cursor = this.dao.ejecutarConsultaSql(query);
+        return cursor != null && cursor.moveToNext();
     }
 }

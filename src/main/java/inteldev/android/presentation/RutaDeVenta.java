@@ -22,6 +22,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Date;
 
+import inteldev.android.CONSTANTES;
 import inteldev.android.Enum.OrdenRutaDeVenta;
 import inteldev.android.R;
 import inteldev.android.accesoadatos.Dao;
@@ -33,13 +34,12 @@ import inteldev.android.negocios.ControladorPosicionesGPS;
 import inteldev.android.negocios.ControladorRutaDeVenta;
 import inteldev.android.negocios.FabricaNegocios;
 import inteldev.android.negocios.SharedPreferencesManager;
-import inteldev.android.presentation.ViewPager.ClienteCollection;
+import inteldev.android.presentation.Mayorista.PrecargaManager.PrecargaActivity;
 import inteldev.android.servicios.GPSIntentService;
 
 import static inteldev.android.CONSTANTES.ID_CLIENTE_SELECCIONADO;
 import static inteldev.android.CONSTANTES.NOMBRE_CLIENTE_KEY;
 import static inteldev.android.CONSTANTES.POSICION_GPS_KEY;
-import static inteldev.android.CONSTANTES.USUARIO_KEY;
 
 public class RutaDeVenta extends AppCompatActivity
 {
@@ -92,15 +92,11 @@ public class RutaDeVenta extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        //  if (requestCode == 0000 && resultCode ==RESULT_OK){
-        //String resultado = data.getExtras().getString("resultado");
-        // close search view if its visible
         lvClientes(diaSeleccionado - 1, ordenRutaDeVentaSeleccionado);
     }
 
     private void rgVisitados()
     {
-
         rgVisitados.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {
             @Override
@@ -109,7 +105,6 @@ public class RutaDeVenta extends AppCompatActivity
                 lvClientes(diaSeleccionado - 1, ordenRutaDeVentaSeleccionado);
             }
         });
-
     }
 
     public int obtenerSeleccionrgVisitados()
@@ -233,12 +228,15 @@ public class RutaDeVenta extends AppCompatActivity
                     posicionesGPS.usuario = loginUsuario;
                     enviarPosicion(posicionesGPS);
 
-                    //                    Intent intentPedidos = new Intent(getApplicationContext(), PedidosMayorista.class);
-                    Intent intentPedidos = new Intent(getApplicationContext(), ClienteCollection.class);
-                    intentPedidos.putExtra(ID_CLIENTE_SELECCIONADO, elegido.getIdCliente());
-                    intentPedidos.putExtra(USUARIO_KEY, loginUsuario);
-                    intentPedidos.putExtra(NOMBRE_CLIENTE_KEY, elegido.getNombre());
-                    startActivityForResult(intentPedidos, 0000);
+                    //                    Intent intentPedidos = new Intent(getApplicationContext(), ClienteCollection.class);
+                    //                    intentPedidos.putExtra(ID_CLIENTE_SELECCIONADO, elegido.getIdCliente());
+                    //                    intentPedidos.putExtra(USUARIO_KEY, loginUsuario);
+                    //                    intentPedidos.putExtra(NOMBRE_CLIENTE_KEY, elegido.getNombre());
+                    //                    startActivityForResult(intentPedidos, 0000);
+                    Intent intentPedidos = new Intent(RutaDeVenta.this, PrecargaActivity.class);
+                    SharedPreferencesManager.setString(RutaDeVenta.this, ID_CLIENTE_SELECCIONADO, elegido.idCliente);
+                    SharedPreferencesManager.setString(RutaDeVenta.this, NOMBRE_CLIENTE_KEY, elegido.getNombre());
+                    startActivityForResult(intentPedidos, CONSTANTES.INTENT_CLIENTE_MAYORISTA);
                 }
             }
         });
@@ -255,7 +253,6 @@ public class RutaDeVenta extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.ruta_de_venta, menu);
         configuraBuscador(menu);
         return true;
@@ -264,71 +261,8 @@ public class RutaDeVenta extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        //        int id = item.getItemId();
-        //        if (id == R.id.action_settings)
-        //        {
-        //            return true;
-        //        }
         switch (item.getItemId())
         {
-
-            //            menu.getItem(0).getSubMenu().getItem(0).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener()
-            //            {
-            //                @Override
-            //                public boolean onMenuItemClick(MenuItem item)
-            //                {
-            //                    ordenRutaDeVentaSeleccionado = OrdenRutaDeVenta.Nombre;
-            //                    lvClientes(diaSeleccionado - 1, ordenRutaDeVentaSeleccionado);
-            //                    return false;
-            //                }
-            //            });
-            //
-            //            menu.getItem(0).getSubMenu().getItem(1).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener()
-            //            {
-            //                @Override
-            //                public boolean onMenuItemClick(MenuItem item)
-            //                {
-            //                    ordenRutaDeVentaSeleccionado = OrdenRutaDeVenta.Domicilio;
-            //                    lvClientes(diaSeleccionado - 1, ordenRutaDeVentaSeleccionado);
-            //                    return false;
-            //                }
-            //            });
-            //
-            //            menu.getItem(0).getSubMenu().getItem(2).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener()
-            //            {
-            //                @Override
-            //                public boolean onMenuItemClick(MenuItem item)
-            //                {
-            //                    ordenRutaDeVentaSeleccionado = OrdenRutaDeVenta.Cuit;
-            //                    lvClientes(diaSeleccionado - 1, ordenRutaDeVentaSeleccionado);
-            //                    return false;
-            //                }
-            //            });
-            //
-            //            menu.getItem(0).getSubMenu().getItem(3).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener()
-            //            {
-            //                @Override
-            //                public boolean onMenuItemClick(MenuItem item)
-            //                {
-            //                    ordenRutaDeVentaSeleccionado = OrdenRutaDeVenta.Codigo;
-            //                    lvClientes(diaSeleccionado - 1, ordenRutaDeVentaSeleccionado);
-            //                    return false;
-            //                }
-            //            });
-            //
-            //            menu.getItem(0).getSubMenu().getItem(4).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener()
-            //            {
-            //                @Override
-            //                public boolean onMenuItemClick(MenuItem item)
-            //                {
-            //                    ordenRutaDeVentaSeleccionado = OrdenRutaDeVenta.Recorrido;
-            //                    lvClientes(diaSeleccionado - 1, ordenRutaDeVentaSeleccionado);
-            //                    return false;
-            //                }
-            //            });
             case R.id.OrdenarListaPorCodigo:
                 ordenRutaDeVentaSeleccionado = OrdenRutaDeVenta.Codigo;
                 item.setChecked(true);
@@ -377,7 +311,6 @@ public class RutaDeVenta extends AppCompatActivity
                     if (TextUtils.isEmpty(newText))
                     {
                         resetSearch(); // reset
-
                     }
                     else
                     {

@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Preventa Android</string>
-    <string name="app_version">CHINAS 1.0</string>
+    <string name="app_version">CHINAS 1.05</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Opciones</string>
     <string name="title_activity_login">Login</string>
@@ -55,6 +55,7 @@
     <string name="tiene_stock">Tiene Stock</string>
     <string name="total_pesos">Total: $</string>
     <string name="total_pesos_pedido">Total del pedido</string>
+    <string name="total_pesos_precarga">Total de la precarga</string>
     <string name="unit_precio">Unit.</string>
     <string name="cantidad_corto">Cant.</string>
     <string name="cantidad_frac">Unid.</string>
@@ -107,5 +108,7 @@
     <string name="domicilio">Domicilio</string>
     <string name="cuit">Cuit</string>
     <string name="recorrido">Recorrido</string>
+    <string name="nueva_precarga">Nueva precarga</string>
+    <string name="stock">Stock</string>
 
 </resources>

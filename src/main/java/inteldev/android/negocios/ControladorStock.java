@@ -34,6 +34,19 @@ public class ControladorStock
         return hayStock;
     }
 
+    public float obtenerStock(String articulo)
+    {
+        float stock = 0;
+        Cursor cursor = dao.ejecutarConsultaSql("select bultos, unidades from Stock where trim(idArticulo)='" + articulo + "'");
+        if (cursor != null && cursor.moveToFirst())
+        {
+            int entero = cursor.getInt(0);
+            int fraccion = cursor.getInt(1);
+            stock = (float) (entero + fraccion / 100);
+        }
+        return stock;
+    }
+
     public boolean hayStock(String articulo, int bultosPedidos, int fraccionPedidos)
     {
         boolean hayStock = false;

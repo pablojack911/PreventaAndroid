@@ -44,11 +44,12 @@ public final class CONSTANTES
     public static final int INTENT_BUSCAR_ARTICULO = 3;
     public static final int INTENT_TAKE_PICTURE = 115;
     public static final int INTENT_FOLDER = 4;
+    public static final int INTENT_CLIENTE_MAYORISTA = 5;
     //VIEWS PARA EL VIEW PAGER DE CLIENTE
     public static final int CANTIDAD_VIEWS_CLIENTE = 4;
     public static final int ARTICULOS_VIEW = 0;
     public static final int OFERTAS_VIEW = 2;
-//    public static final int CONVENIOS_VIEW = 2;
+    //    public static final int CONVENIOS_VIEW = 2;
     public static final int DETALLE_PEDIDO_VIEW = 1;
     public static final int MOTIVO_NO_COMPRA_VIEW = 3;
     public static final java.lang.String CODIGO_ARTICULO = "codigo-articulo";
@@ -69,4 +70,8 @@ public final class CONSTANTES
     public static final String CONFIG_CONVENIO_DESCUENTO = "descuento-convenio-key";
     public static final String CONFIG_CONVENIO_PRECIO = "precio-convenio-key";
     public static final String CONFIG_CONVENIO_TIPO = "tipo-convenio-key";
+    public static final String QUERY_BUSQUEDA_ARTICULO = "select * from articulos order by nombre";
+    public static final String QUERY_BUSQUEDA_FOLDER = "";
+    public static final String BUSCAR_ARTICULO = "buscar-articulo-key";
+    public static final String TITULO = "titulo-activity-key";
 }

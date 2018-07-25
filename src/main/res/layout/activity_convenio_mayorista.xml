@@ -5,11 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".presentation.ConvenioMayorista">
+    tools:context=".presentation.Mayorista.ConvenioMayorista">
 
     <!--<TextView-->
     <!--android:id="@+id/tvDescuento"-->
@@ -23,11 +19,9 @@
         android:id="@+id/input_layout_descuento"
         android:layout_width="80dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:focusable="false"
-        app:layout_constraintEnd_toStartOf="@+id/input_layout_precioUnitario"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -86,7 +80,7 @@
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/input_layout_precioUnitario"
-        android:layout_width="120dp"
+        android:layout_width="110dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -111,14 +105,12 @@
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/input_layout_precioUnitarioConDescuento"
-        android:layout_width="120dp"
+        android:layout_width="110dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:focusable="false"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/input_layout_precioUnitario"
         app:layout_constraintTop_toTopOf="parent">
 
         <android.support.design.widget.TextInputEditText
@@ -136,13 +128,13 @@
 
     <Spinner
         android:id="@+id/spMotivo"
+        style="@style/Widget.AppCompat.Spinner.Underlined"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_weight="1"
-        style="@style/Widget.AppCompat.Spinner.Underlined"
         android:duplicateParentState="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

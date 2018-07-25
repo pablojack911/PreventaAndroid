@@ -61,4 +61,16 @@ public class SharedPreferencesManager
         }
         return getSharedPreferences(context).getString(IMEI_KEY, "");
     }
+
+    public static String getString(Context context, String key)
+    {
+        return getSharedPreferences(context).getString(key, "");
+    }
+
+    public static void setString(Context context, String key, String value)
+    {
+        SharedPreferences.Editor editor = getSharedPreferences(context).edit();
+        editor.putString(key, value);
+        editor.apply();
+    }
 }

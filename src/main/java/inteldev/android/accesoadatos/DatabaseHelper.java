@@ -12,7 +12,7 @@ import java.io.File;
  * Created by Pocho on 22/02/2017.
  */
 
-class DatabaseHelper extends SQLiteOpenHelper
+public class DatabaseHelper extends SQLiteOpenHelper
 {
     private static final File directory = Environment.getExternalStorageDirectory();
     private static final String DB_NAME = directory + "/" + Environment.DIRECTORY_DOWNLOADS + "/InteldevMobile.sqlite";
@@ -26,7 +26,7 @@ class DatabaseHelper extends SQLiteOpenHelper
         this.createTables = new CreateTables();
     }
 
-    static DatabaseHelper getInstance(Context ctx)
+    public static DatabaseHelper getInstance(Context ctx)
     {
         // Use the application context, which will ensure that you
         // don't accidentally leak an Activity's context.

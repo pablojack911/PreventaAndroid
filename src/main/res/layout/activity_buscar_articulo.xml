@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="inteldev.android.presentation.BuscarArticulo">
+    tools:context="inteldev.android.presentation.Articulos.BuscarArticulo">
 
     <SearchView
         android:id="@+id/buscador_articulo"

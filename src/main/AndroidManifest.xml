@@ -44,7 +44,7 @@
             android:label="@string/title_activity_ruta_de_venta"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".presentation.Pedidos"
+            android:name=".presentation.Preventa.Pedidos"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/title_activity_pedidos"
             android:windowSoftInputMode="adjustPan" />
@@ -54,7 +54,7 @@
             android:label="@string/title_activity_recibir"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".presentation.Convenio"
+            android:name=".presentation.Preventa.Convenio"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/title_activity_convenio"
             android:windowSoftInputMode="adjustPan" />
@@ -62,11 +62,6 @@
             android:name=".presentation.Oferta"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/title_activity_ofertas"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:name=".presentation.ArticulosOferta"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:label="@string/title_activity_articulos_oferta"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".presentation.Detalle_Oferta"
@@ -84,7 +79,7 @@
             android:label="@string/title_activity_dialogo_cantidad"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".presentation.ViewPager.ClienteCollection"
+            android:name=".presentation.Mayorista.PedidoManager.ClienteCollection"
             android:configChanges="orientation|screenSize"
             android:label="@string/view_pager"
             android:windowSoftInputMode="adjustPan" />
@@ -94,29 +89,31 @@
             android:label="@string/dtos_convs"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".presentation.BuscarArticulo"
-            android:windowSoftInputMode="stateVisible" >
+            android:name=".presentation.Articulos.BuscarArticulo"
+            android:windowSoftInputMode="stateVisible">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".presentation.ConvenioMayorista"
+            android:name=".presentation.Mayorista.ConvenioMayorista"
             android:theme="@style/Dialog.NoTitle"
             android:windowSoftInputMode="stateVisible" />
-        <activity
-            android:name=".presentation.PedidosMayorista"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:label="@string/title_activity_pedidos"
-            android:windowSoftInputMode="adjustPan" />
 
         <service android:name=".servicios.GPSIntentService" />
         <!-- <service android:name=".servicios.ServiceGeolocation" /> -->
-        <!--android:theme="@style/Theme.AppCompat.Dialog"-->
+        <!-- android:theme="@style/Theme.AppCompat.Dialog" -->
 
         <service android:name=".servicios.GPSLocationService" />
 
-        <activity android:name=".presentation.Folder.Folder"></activity>
+        <activity
+            android:name=".presentation.Mayorista.Folder.Folder"
+            android:windowSoftInputMode="stateVisible">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".presentation.Mayorista.PrecargaManager.PrecargaActivity"></activity>
     </application>
 
 </manifest>

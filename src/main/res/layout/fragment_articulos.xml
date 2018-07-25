@@ -96,7 +96,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:focusable="false"
-        app:layout_constraintEnd_toStartOf="@+id/il_precioUnitario"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/il_codigoArticulo">
 
@@ -106,7 +106,8 @@
             android:layout_height="wrap_content"
             android:focusable="false"
             android:hint="@string/precio_unitario_lista"
-            android:inputType="numberDecimal" />
+            android:inputType="numberDecimal"
+            android:text="$150.33" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -135,7 +136,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:focusable="false"
-        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintEnd_toStartOf="@+id/guideline5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/il_precioUnitario">
 
@@ -145,9 +146,33 @@
             android:layout_height="wrap_content"
             android:clickable="true"
             android:focusable="false"
+            android:gravity="center"
             android:hint="@string/descuento"
             android:inputType="numberDecimal"
-            android:text="12.5%" />
+            android:text="12.5%"
+            tools:ignore="HardcodedText" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/il_cant"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="@+id/guideline5"
+        app:layout_constraintTop_toBottomOf="@id/il_precioUnitario">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/edtStock"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:gravity="center"
+            android:hint="@string/stock"
+            android:inputType="numberDecimal"
+            android:text="5.3"
+            tools:ignore="HardcodedText" />
 
     </android.support.design.widget.TextInputLayout>
 
@@ -284,5 +309,12 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_begin="184dp" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="90dp" />
 
 </android.support.constraint.ConstraintLayout>

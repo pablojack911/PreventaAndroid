@@ -33,7 +33,6 @@ import inteldev.android.negocios.ControladorOferta;
 import inteldev.android.negocios.ControladorPrecio;
 import inteldev.android.negocios.ControladorStock;
 import inteldev.android.negocios.FabricaNegocios;
-import inteldev.android.negocios.SharedPreferencesManager;
 import inteldev.android.presentation.vistaModelo.OferOperOfertas;
 
 import static inteldev.android.CONSTANTES.CLAVE_UNICA_CABOPER;
