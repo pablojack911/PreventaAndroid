@@ -6,6 +6,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 import org.ksoap2.serialization.SoapObject;
 
 import inteldev.android.R;
+import inteldev.android.accesoadatos.Dao;
 import inteldev.android.negocios.EstadoWebService;
 import inteldev.android.negocios.FabricaNegocios;
 import inteldev.android.negocios.ServiceRegistry;
@@ -42,7 +44,7 @@ public class LoginActivity extends AppCompatActivity
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
-//    private UserLoginTask mAuthTask;
+    //    private UserLoginTask mAuthTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -195,54 +197,66 @@ public class LoginActivity extends AppCompatActivity
             }
             else
             {
-                EstadoWebService.Estado estadoWebService;
-                String servicioLogin;
-                EstadoWebService oEstadoWebService = FabricaNegocios.obtenerEstadoWebService(LoginActivity.this, usuario);
-                estadoWebService = oEstadoWebService.verificarConexionServicio("hola", "holaRemoto");
-                if (estadoWebService == EstadoWebService.Estado.NoDisponible)
+                Dao dao = new Dao(LoginActivity.this);
+                Cursor cursor = dao.ejecutarConsultaSql("select * from vendedores where usuario = '" + usuario + "' and pass = '" + password + "'");
+                if (cursor.moveToNext())
                 {
-                    FabricaMensaje.dialogoOk(LoginActivity.this, "Avise a sistemas", "Servicio Web no disponible", new DialogoAlertaNeutral()
-                    {
-                        @Override
-                        public void Neutral()
-                        {
-                        }
-                    }).show();
+                    SharedPreferencesManager.setLogin(LoginActivity.this, true);
+                    SharedPreferencesManager.setLoginUsuario(LoginActivity.this, usuario);
+                    goToMain();
+                    finish();
                 }
                 else
                 {
-                    if (estadoWebService == EstadoWebService.Estado.ConexionLocal)
+                    EstadoWebService.Estado estadoWebService;
+                    String servicioLogin;
+                    EstadoWebService oEstadoWebService = FabricaNegocios.obtenerEstadoWebService(LoginActivity.this, usuario);
+                    estadoWebService = oEstadoWebService.verificarConexionServicio("hola", "holaRemoto");
+                    if (estadoWebService == EstadoWebService.Estado.NoDisponible)
                     {
-                        servicioLogin = "IniciarSesion";
+                        FabricaMensaje.dialogoOk(LoginActivity.this, "Avise a sistemas", "Servicio Web no disponible", new DialogoAlertaNeutral()
+                        {
+                            @Override
+                            public void Neutral()
+                            {
+                            }
+                        }).show();
                     }
                     else
                     {
-                        servicioLogin = "IniciarSesionRemoto";
-                    }
+                        if (estadoWebService == EstadoWebService.Estado.ConexionLocal)
+                        {
+                            servicioLogin = "IniciarSesion";
+                        }
+                        else
+                        {
+                            servicioLogin = "IniciarSesionRemoto";
+                        }
 
-                    ServiceRegistry serviceRegistry = new ServiceRegistry(LoginActivity.this, usuario);
-                    WebServiceHelper webServiceHelper = serviceRegistry.getWebServiceHelper();
-                    webServiceHelper.addMethodParameter(servicioLogin, "usuario", usuario);
-                    webServiceHelper.addMethodParameter(servicioLogin, "clave", password);
-                    webServiceHelper.addMethodParameter(servicioLogin, "imei", SharedPreferencesManager.getImei(LoginActivity.this));
+                        ServiceRegistry serviceRegistry = new ServiceRegistry(LoginActivity.this, usuario);
+                        WebServiceHelper webServiceHelper = serviceRegistry.getWebServiceHelper();
+                        webServiceHelper.addMethodParameter(servicioLogin, "usuario", usuario);
+                        webServiceHelper.addMethodParameter(servicioLogin, "clave", password);
+                        webServiceHelper.addMethodParameter(servicioLogin, "imei", SharedPreferencesManager.getImei(LoginActivity.this));
 
-                    SoapObject respuesta = webServiceHelper.executeService(servicioLogin);
+                        SoapObject respuesta = webServiceHelper.executeService(servicioLogin);
 
-                    String respuestaString = respuesta.getProperty(0).toString();
-                    if(respuestaString.equals("anyType{}"))
-                    {
-                        SharedPreferencesManager.setLogin(LoginActivity.this, true);
-                        SharedPreferencesManager.setLoginUsuario(LoginActivity.this, usuario);
-                        goToMain();
-                        finish();
+                        String respuestaString = respuesta.getProperty(0).toString();
+                        if (respuestaString.equals("anyType{}"))
+                        {
+                            SharedPreferencesManager.setLogin(LoginActivity.this, true);
+                            SharedPreferencesManager.setLoginUsuario(LoginActivity.this, usuario);
+                            goToMain();
+                            finish();
+                        }
+                        else
+                        {
+                            mPasswordView.setError(respuestaString);
+                            mPasswordView.requestFocus();
+                        }
+                        //                    mAuthTask = new UserLoginTask(usuario, password, servicioLogin);
+                        //                    mAuthTask.execute((Void) null);
                     }
-                    else
-                    {
-                        mPasswordView.setError(respuestaString);
-                        mPasswordView.requestFocus();
-                    }
-//                    mAuthTask = new UserLoginTask(usuario, password, servicioLogin);
-//                    mAuthTask.execute((Void) null);
                 }
             }
         }
@@ -286,62 +300,62 @@ public class LoginActivity extends AppCompatActivity
             }
         });
     }
-//
-//    /**
-//     * Represents an asynchronous login/registration task used to authenticate
-//     * the user.
-//     */
-//    public class UserLoginTask extends AsyncTask<Void, Void, Boolean>
-//    {
-//
-//        private final String mUsuario;
-//        private final String mPassword;
-//        private final String mServicioLogin;
-//
-//        UserLoginTask(String usuario, String password, String servicioLogin)
-//        {
-//            mUsuario = usuario;
-//            mPassword = password;
-//            mServicioLogin = servicioLogin;
-//        }
-//
-//        @Override
-//        protected Boolean doInBackground(Void... params)
-//        {
-////            Dao controladorDb = new Dao(LoginActivity.this);
-////            Cursor cursor = controladorDb.ejecutarConsultaSql("select * from vendedores where usuario = '" + mUsuario + "' and pass = '" + mPassword + "'");
-////            return cursor.moveToFirst();
-//
-//
-//
-//        }
-//
-//        @Override
-//        protected void onPostExecute(final Boolean success)
-//        {
-//            mAuthTask = null;
-//            showProgress(false);
-//
-//            if (success)
-//            {
-//                SharedPreferencesManager.setLogin(LoginActivity.this, true);
-//                SharedPreferencesManager.setLoginUsuario(LoginActivity.this, mUsuario);
-//                goToMain();
-//                finish();
-//            }
-//            else
-//            {
-//                mPasswordView.setError(getString(R.string.error_incorrect_password));
-//                mPasswordView.requestFocus();
-//            }
-//        }
-//
-//        @Override
-//        protected void onCancelled()
-//        {
-//            mAuthTask = null;
-//            showProgress(false);
-//        }
-//    }
+    //
+    //    /**
+    //     * Represents an asynchronous login/registration task used to authenticate
+    //     * the user.
+    //     */
+    //    public class UserLoginTask extends AsyncTask<Void, Void, Boolean>
+    //    {
+    //
+    //        private final String mUsuario;
+    //        private final String mPassword;
+    //        private final String mServicioLogin;
+    //
+    //        UserLoginTask(String usuario, String password, String servicioLogin)
+    //        {
+    //            mUsuario = usuario;
+    //            mPassword = password;
+    //            mServicioLogin = servicioLogin;
+    //        }
+    //
+    //        @Override
+    //        protected Boolean doInBackground(Void... params)
+    //        {
+    ////            Dao controladorDb = new Dao(LoginActivity.this);
+    ////            Cursor cursor = controladorDb.ejecutarConsultaSql("select * from vendedores where usuario = '" + mUsuario + "' and pass = '" + mPassword + "'");
+    ////            return cursor.moveToFirst();
+    //
+    //
+    //
+    //        }
+    //
+    //        @Override
+    //        protected void onPostExecute(final Boolean success)
+    //        {
+    //            mAuthTask = null;
+    //            showProgress(false);
+    //
+    //            if (success)
+    //            {
+    //                SharedPreferencesManager.setLogin(LoginActivity.this, true);
+    //                SharedPreferencesManager.setLoginUsuario(LoginActivity.this, mUsuario);
+    //                goToMain();
+    //                finish();
+    //            }
+    //            else
+    //            {
+    //                mPasswordView.setError(getString(R.string.error_incorrect_password));
+    //                mPasswordView.requestFocus();
+    //            }
+    //        }
+    //
+    //        @Override
+    //        protected void onCancelled()
+    //        {
+    //            mAuthTask = null;
+    //            showProgress(false);
+    //        }
+    //    }
 }
 

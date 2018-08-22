@@ -16,8 +16,10 @@ import inteldev.android.R;
 import inteldev.android.modelo.Articulo;
 import inteldev.android.negocios.ControladorArticulo;
 import inteldev.android.negocios.FabricaNegocios;
+import inteldev.android.negocios.SharedPreferencesManager;
 
 import static inteldev.android.CONSTANTES.ARTICULO_SELECCIONADO;
+import static inteldev.android.CONSTANTES.ULTIMA_BUSQUEDA_ARTICULO;
 
 public class Folder extends AppCompatActivity
 {
@@ -66,6 +68,11 @@ public class Folder extends AppCompatActivity
             searchView.setIconifiedByDefault(false);
             SearchView.OnQueryTextListener queryTextListener = new SearchView.OnQueryTextListener()
             {
+                public boolean onQueryTextSubmit(String query)
+                {
+                    return false;
+                }
+
                 public boolean onQueryTextChange(String newText)
                 {
                     if (TextUtils.isEmpty(newText))
@@ -79,13 +86,9 @@ public class Folder extends AppCompatActivity
                     Log.e("Text", newText);
                     return false;
                 }
-
-                public boolean onQueryTextSubmit(String query)
-                {
-                    return false;
-                }
             };
             searchView.setOnQueryTextListener(queryTextListener);
+            searchView.setQuery(SharedPreferencesManager.getString(Folder.this, ULTIMA_BUSQUEDA_ARTICULO), false);
         }
     }
 
@@ -94,6 +97,7 @@ public class Folder extends AppCompatActivity
         Log.e("QueryFragment", query);
         if (adapter != null)
         {
+            SharedPreferencesManager.setString(Folder.this, ULTIMA_BUSQUEDA_ARTICULO, query);
             adapter.getFilter().filter(query);
         }
     }

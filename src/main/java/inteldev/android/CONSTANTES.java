@@ -74,4 +74,5 @@ public final class CONSTANTES
     public static final String QUERY_BUSQUEDA_FOLDER = "";
     public static final String BUSCAR_ARTICULO = "buscar-articulo-key";
     public static final String TITULO = "titulo-activity-key";
+    public static final String ULTIMA_BUSQUEDA_ARTICULO = "ultima-busqueda-art-key";
 }

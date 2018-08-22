@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Preventa Android</string>
-    <string name="app_version">CHINAS 1.05</string>
+    <string name="app_version">CHINAS 1.06</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Opciones</string>
     <string name="title_activity_login">Login</string>

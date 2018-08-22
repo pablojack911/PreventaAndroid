@@ -9,7 +9,6 @@ import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,8 +26,8 @@ import inteldev.android.modelo.PosicionesGPS;
 import inteldev.android.negocios.CursorToXml;
 import inteldev.android.negocios.EstadoWebService;
 import inteldev.android.negocios.FabricaNegocios;
-import inteldev.android.negocios.SharedPreferencesManager;
 import inteldev.android.negocios.ServiceRegistry;
+import inteldev.android.negocios.SharedPreferencesManager;
 import inteldev.android.negocios.WebServiceHelper;
 import inteldev.android.servicios.GPSIntentService;
 import inteldev.android.servicios.GPSLocationService;
@@ -40,8 +39,8 @@ import static inteldev.android.CONSTANTES.REQUEST_CHECK_SETTINGS;
 public class MainActivity extends AppCompatActivity
 {
     //    public static String loginUsuario = "";
-//    public static String loginIdVendedor = "";
-//    public static String loginPass = "";
+    //    public static String loginIdVendedor = "";
+    //    public static String loginPass = "";
     private ConnectivityManager connectivityManager;
 
     @Override
@@ -58,55 +57,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+    protected void onDestroy()
     {
-        switch (requestCode)
-        {
-            case CONSTANTES.REQUEST_CHECK_SETTINGS:
-                if (grantResults.length > 0)
-                {
-                    for (int res : grantResults)
-                    {
-                        if (res != PackageManager.PERMISSION_GRANTED)
-                        {
-                            ActivityCompat.requestPermissions(this, PERMISSIONS, REQUEST_CHECK_SETTINGS);
-                        }
-                    }
-                }
-            case CONSTANTES.REQUEST_STORAGE_PERMISSION:
-                if (grantResults.length > 0)
-                {
-                    if (grantResults[0] != PackageManager.PERMISSION_GRANTED || grantResults[1] != PackageManager.PERMISSION_GRANTED)
-                    {
-                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, CONSTANTES.REQUEST_STORAGE_PERMISSION);
-                    }
-                }
-                break;
-            case CONSTANTES.REQUEST_LOCATION_PERMISSION:
-                if (grantResults.length > 0)
-                {
-                    if (grantResults[0] != PackageManager.PERMISSION_GRANTED || grantResults[1] != PackageManager.PERMISSION_GRANTED)
-                    {
-                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, CONSTANTES.REQUEST_LOCATION_PERMISSION);
-                    }
-                }
-                break;
-            case CONSTANTES.REQUEST_PHONE_STATE_PERMISSION:
-                if (grantResults.length > 0)
-                {
-                    if (grantResults[0] != PackageManager.PERMISSION_GRANTED)
-                    {
-                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, CONSTANTES.REQUEST_PHONE_STATE_PERMISSION);
-                    }
-                }
-                break;
-        }
-    }
-
-    @Override
-    protected void onResume()
-    {
-        super.onResume();
+        super.onDestroy();
     }
 
     private void bindUI()
@@ -153,9 +106,55 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onDestroy()
+    protected void onResume()
     {
-        super.onDestroy();
+        super.onResume();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+    {
+        switch (requestCode)
+        {
+            case CONSTANTES.REQUEST_CHECK_SETTINGS:
+                if (grantResults.length > 0)
+                {
+                    for (int res : grantResults)
+                    {
+                        if (res != PackageManager.PERMISSION_GRANTED)
+                        {
+                            ActivityCompat.requestPermissions(this, PERMISSIONS, REQUEST_CHECK_SETTINGS);
+                        }
+                    }
+                }
+            case CONSTANTES.REQUEST_STORAGE_PERMISSION:
+                if (grantResults.length > 0)
+                {
+                    if (grantResults[0] != PackageManager.PERMISSION_GRANTED || grantResults[1] != PackageManager.PERMISSION_GRANTED)
+                    {
+                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, CONSTANTES.REQUEST_STORAGE_PERMISSION);
+                    }
+                }
+                break;
+            case CONSTANTES.REQUEST_LOCATION_PERMISSION:
+                if (grantResults.length > 0)
+                {
+                    if (grantResults[0] != PackageManager.PERMISSION_GRANTED || grantResults[1] != PackageManager.PERMISSION_GRANTED)
+                    {
+                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, CONSTANTES.REQUEST_LOCATION_PERMISSION);
+                    }
+                }
+                break;
+            case CONSTANTES.REQUEST_PHONE_STATE_PERMISSION:
+                if (grantResults.length > 0)
+                {
+                    if (grantResults[0] != PackageManager.PERMISSION_GRANTED)
+                    {
+                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, CONSTANTES.REQUEST_PHONE_STATE_PERMISSION);
+                    }
+                }
+                break;
+        }
     }
 
     private void btnEnviar()
@@ -340,8 +339,8 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onMenuItemClick(MenuItem menuItem)
             {
-                SharedPreferencesManager.setLogin(MainActivity.this,false);
-                Intent intent = new Intent(MainActivity.this,LoginActivity.class);
+                SharedPreferencesManager.setLogin(MainActivity.this, false);
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 finish();

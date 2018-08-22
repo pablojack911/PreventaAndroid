@@ -16,8 +16,10 @@ import android.widget.TextView;
 
 import inteldev.android.R;
 import inteldev.android.modelo.Articulo;
+import inteldev.android.negocios.SharedPreferencesManager;
 
 import static inteldev.android.CONSTANTES.ARTICULO_SELECCIONADO;
+import static inteldev.android.CONSTANTES.ULTIMA_BUSQUEDA_ARTICULO;
 
 public class BuscarArticulo extends AppCompatActivity
 {
@@ -75,6 +77,11 @@ public class BuscarArticulo extends AppCompatActivity
             searchView.setIconifiedByDefault(false);
             SearchView.OnQueryTextListener queryTextListener = new SearchView.OnQueryTextListener()
             {
+                public boolean onQueryTextSubmit(String query)
+                {
+                    return false;
+                }
+
                 public boolean onQueryTextChange(String newText)
                 {
                     if (TextUtils.isEmpty(newText))
@@ -88,19 +95,16 @@ public class BuscarArticulo extends AppCompatActivity
                     Log.e("Text", newText);
                     return false;
                 }
-
-                public boolean onQueryTextSubmit(String query)
-                {
-                    return false;
-                }
             };
             searchView.setOnQueryTextListener(queryTextListener);
+            searchView.setSubmitButtonEnabled(false);
+            searchView.setQuery(SharedPreferencesManager.getString(BuscarArticulo.this, ULTIMA_BUSQUEDA_ARTICULO), false);
         }
     }
 
     public void beginSearch(String query)
     {
-        Log.e("QueryFragment", query);
+        SharedPreferencesManager.setString(BuscarArticulo.this, ULTIMA_BUSQUEDA_ARTICULO, query);
         if (adapter != null)
         {
             adapter.getFilter().filter(query);
