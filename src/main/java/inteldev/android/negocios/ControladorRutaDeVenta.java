@@ -63,7 +63,8 @@ public class ControladorRutaDeVenta
         String whereVisitado;
         if (seleccionVisitado == 0)
         {
-            whereVisitado = " and not (exists (select claveunica from caboper where caboper.idCliente = cl.idCliente and caboper.fecha = '" + Fecha.obtenerFechaActual().toString() + "') or exists (select distinct idcliente from posicionesgps pos where motivonocompra>0 and pos.idcliente=cl.idcliente)) ";
+            whereVisitado = " and not (exists (select claveunica from caboper where caboper.idCliente = cl.idCliente) or exists (select distinct idcliente from posicionesgps pos where motivonocompra>0 and pos.idcliente=cl.idcliente)) ";
+            //            whereVisitado = " and not (exists (select claveunica from caboper where caboper.idCliente = cl.idCliente and caboper.fecha = '" + Fecha.obtenerFechaActual().toString() + "') or exists (select distinct idcliente from posicionesgps pos where motivonocompra>0 and pos.idcliente=cl.idcliente)) ";
 //            whereVisitado = "and not exists ( select claveunica from caboper where " +
 //                    "caboper.idCliente = cl.idCliente and caboper.fecha = '" + Fecha.obtenerFechaActual().toString() + "')" +
 //                    "and not exists (select distinct idCliente from PosicionesGPS where PosicionesGPS.idCliente = cl.idCliente " +
@@ -74,7 +75,8 @@ public class ControladorRutaDeVenta
         {
             if (seleccionVisitado == 1)
             {
-                whereVisitado = " and (exists (select claveunica from caboper where caboper.idCliente = cl.idCliente and caboper.fecha = '" + Fecha.obtenerFechaActual().toString() + "') or exists (select distinct idcliente from posicionesgps pos where motivonocompra>0 and pos.idcliente=cl.idcliente))";
+                whereVisitado = " and (exists (select claveunica from caboper where caboper.idCliente = cl.idCliente) or exists (select distinct idcliente from posicionesgps pos where motivonocompra>0 and pos.idcliente=cl.idcliente))";
+                //                whereVisitado = " and (exists (select claveunica from caboper where caboper.idCliente = cl.idCliente and caboper.fecha = '" + Fecha.obtenerFechaActual().toString() + "') or exists (select distinct idcliente from posicionesgps pos where motivonocompra>0 and pos.idcliente=cl.idcliente))";
 //                whereVisitado = "and (exists ( select claveunica from caboper where " +
 //                        "caboper.idCliente = cl.idCliente and caboper.fecha = '" + Fecha.obtenerFechaActual().toString() + "')" +
 //                        "or  exists (select distinct idCliente from PosicionesGPS where PosicionesGPS.idCliente = cl.idCliente " +

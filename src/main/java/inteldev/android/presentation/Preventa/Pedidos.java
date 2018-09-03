@@ -316,16 +316,16 @@ public class Pedidos extends AppCompatActivity
                     posicionesGPS.motivoNoCompra = motivo;
                     posicionesGPS.idCliente = idClienteSeleccionado;
                     enviarPosicion(posicionesGPS);
-                    motivo = controladorPosicionesGPS.obtenerMotivoNoCompra(idClienteSeleccionado, Fecha.obtenerFechaActual().toString());
-
-                    if (motivo == MotivoNoCompra.NO_HAY_DATOS_REGISTRADOS)
-                    {
-                        controladorPosicionesGPS.actualizar(idClienteSeleccionado, Fecha.obtenerFechaActual().toString(), posicionesGPS);
-                    }
-                    else
-                    {
-                        enviarPosicion(posicionesGPS);
-                    }
+                    //                    motivo = controladorPosicionesGPS.obtenerMotivoNoCompra(idClienteSeleccionado, Fecha.obtenerFechaActual().toString());
+                    //
+                    //                    if (motivo == MotivoNoCompra.NO_HAY_DATOS_REGISTRADOS)
+                    //                    {
+                    //                        controladorPosicionesGPS.actualizar(idClienteSeleccionado, Fecha.obtenerFechaActual().toString(), posicionesGPS);
+                    //                    }
+                    //                    else
+                    //                    {
+                    //                        enviarPosicion(posicionesGPS);
+                    //                    }
                     finish();
                 }
             }

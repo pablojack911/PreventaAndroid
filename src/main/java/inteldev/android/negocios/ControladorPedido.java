@@ -28,7 +28,8 @@ public class ControladorPedido
     {
         String claveUnica;
 
-        Cursor cursor = this.dao.ejecutarConsultaSql("select claveUnica from CabOper" + " where idCliente = '" + idCliente + "'" + " and fecha = '" + fecha.toString() + "'");
+        Cursor cursor = this.dao.ejecutarConsultaSql("select claveUnica from CabOper" + " where idCliente = '" + idCliente + "'");
+        //        Cursor cursor = this.dao.ejecutarConsultaSql("select claveUnica from CabOper" + " where idCliente = '" + idCliente + "'" + " and fecha = '" + fecha.toString() + "'");
 
         if (cursor != null && cursor.moveToFirst())
         {
@@ -61,7 +62,8 @@ public class ControladorPedido
     public ArrayList<DetallePedido> consultarPedidos(String idCliente)
     {
         ArrayList<DetallePedido> listadetallePedido = new ArrayList<>();
-        Cursor cursor = dao.ejecutarConsultaSql("select cabOper.idCliente, cabOper.fecha, detOper.idArticulo, detOper.entero, detOper.fraccion, detOper.precio, detOper.descuento, detOper.idFila, detOper.oferta, detOper.claveUnica, detOper.unidadVenta from cabOper inner join detOper on detOper.claveUnica = cabOper.claveUnica where cabOper.idCliente = '" + idCliente + "' and cabOper.fecha = '" + Fecha.obtenerFechaActual().toString() + "'");
+        Cursor cursor = dao.ejecutarConsultaSql("select cabOper.idCliente, cabOper.fecha, detOper.idArticulo, detOper.entero, detOper.fraccion, detOper.precio, detOper.descuento, detOper.idFila, detOper.oferta, detOper.claveUnica, detOper.unidadVenta from cabOper inner join detOper on detOper.claveUnica = cabOper.claveUnica where cabOper.idCliente = '" + idCliente + "'");
+        //        Cursor cursor = dao.ejecutarConsultaSql("select cabOper.idCliente, cabOper.fecha, detOper.idArticulo, detOper.entero, detOper.fraccion, detOper.precio, detOper.descuento, detOper.idFila, detOper.oferta, detOper.claveUnica, detOper.unidadVenta from cabOper inner join detOper on detOper.claveUnica = cabOper.claveUnica where cabOper.idCliente = '" + idCliente + "' and cabOper.fecha = '" + Fecha.obtenerFechaActual().toString() + "'");
         if (cursor != null && cursor.moveToFirst())
         {
             Mapeador<DetallePedido> detallePedidoMapeador = new Mapeador<DetallePedido>(new DetallePedido());
@@ -73,7 +75,8 @@ public class ControladorPedido
     public ArrayList<DetallePedido> consultarPedidos(String idCliente, String claveUnicaCabOper)
     {
         ArrayList<DetallePedido> listadetallePedido = new ArrayList<>();
-        Cursor cursor = dao.ejecutarConsultaSql("select cabOper.idCliente, cabOper.fecha, detOper.idArticulo, detOper.entero, detOper.fraccion, detOper.precio, detOper.descuento, detOper.idFila, detOper.oferta, detOper.claveUnica, detOper.unidadVenta from cabOper inner join detOper on detOper.claveUnica = cabOper.claveUnica where cabOper.idCliente = '" + idCliente + "' and cabOper.fecha = '" + Fecha.obtenerFechaActual().toString() + "' and cabOper.claveUnica='" + claveUnicaCabOper + "'");
+        Cursor cursor = dao.ejecutarConsultaSql("select cabOper.idCliente, cabOper.fecha, detOper.idArticulo, detOper.entero, detOper.fraccion, detOper.precio, detOper.descuento, detOper.idFila, detOper.oferta, detOper.claveUnica, detOper.unidadVenta from cabOper inner join detOper on detOper.claveUnica = cabOper.claveUnica where cabOper.idCliente = '" + idCliente + "' and detOper.enviado=0 and cabOper.claveUnica='" + claveUnicaCabOper + "'");
+        //        Cursor cursor = dao.ejecutarConsultaSql("select cabOper.idCliente, cabOper.fecha, detOper.idArticulo, detOper.entero, detOper.fraccion, detOper.precio, detOper.descuento, detOper.idFila, detOper.oferta, detOper.claveUnica, detOper.unidadVenta from cabOper inner join detOper on detOper.claveUnica = cabOper.claveUnica where cabOper.idCliente = '" + idCliente + "' and cabOper.fecha = '" + Fecha.obtenerFechaActual().toString() + "' and cabOper.claveUnica='" + claveUnicaCabOper + "'");
         if (cursor != null && cursor.moveToFirst())
         {
             Mapeador<DetallePedido> detallePedidoMapeador = new Mapeador<DetallePedido>(new DetallePedido());
@@ -84,7 +87,8 @@ public class ControladorPedido
 
     public ArrayList<Precarga> consultarPrecargas(String idCliente)
     {
-        Cursor cursor = dao.ejecutarConsultaSql("select caboper.rowid, detOper.claveUnica, sum((precio - (precio*(descuento/100)))*((entero * unidadVenta)+ fraccion))  as importeTotal from cabOper inner join detOper on detOper.claveUnica = cabOper.claveUnica where cabOper.idCliente = '" + idCliente + "' and cabOper.fecha = '" + Fecha.obtenerFechaActual() + "' group by detOper.claveUnica order by caboper.rowid");
+        Cursor cursor = dao.ejecutarConsultaSql("select caboper.rowid, detOper.claveUnica, sum((precio - (precio*(descuento/100)))*((entero * unidadVenta)+ fraccion))  as importeTotal from cabOper inner join detOper on detOper.claveUnica = cabOper.claveUnica where cabOper.idCliente = '" + idCliente + "' and detOper.enviado = 0 group by detOper.claveUnica order by caboper.rowid");
+        //        Cursor cursor = dao.ejecutarConsultaSql("select caboper.rowid, detOper.claveUnica, sum((precio - (precio*(descuento/100)))*((entero * unidadVenta)+ fraccion))  as importeTotal from cabOper inner join detOper on detOper.claveUnica = cabOper.claveUnica where cabOper.idCliente = '" + idCliente + "' and cabOper.fecha = '" + Fecha.obtenerFechaActual() + "' group by detOper.claveUnica order by caboper.rowid");
         ArrayList<Precarga> precargaArrayList = new ArrayList<>();
         if (cursor != null && cursor.moveToFirst())
         {

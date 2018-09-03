@@ -27,7 +27,8 @@ public class ControladorPosicionesGPS
 
     public int obtenerMotivoNoCompra(String idCliente, String fecha)
     {
-        String query = "select motivoNoCompra from PosicionesGPS where PosicionesGPS.idCliente = '" + idCliente + "' and estado<>6 and strftime('%Y-%m-%d', PosicionesGPS.Fecha)=='" + fecha + "' order by fecha desc limit 1";
+        String query = "select motivoNoCompra from PosicionesGPS where PosicionesGPS.idCliente = '" + idCliente + "' and estado<>6 order by fecha desc limit 1";
+        //        String query = "select motivoNoCompra from PosicionesGPS where PosicionesGPS.idCliente = '" + idCliente + "' and estado<>6 and strftime('%Y-%m-%d', PosicionesGPS.Fecha)=='" + fecha + "' order by fecha desc limit 1";
         Cursor cursor = this.dao.ejecutarConsultaSql(query);
         if (cursor != null && cursor.moveToFirst())
         {
@@ -36,21 +37,22 @@ public class ControladorPosicionesGPS
         return -1;
     }
 
-    public long actualizar(String idCliente, String fecha, PosicionesGPS posicionesGPS)
-    {
-        Mapeador<PosicionesGPS> posicionGPSMapeador = new Mapeador<PosicionesGPS>(posicionesGPS);
-        ContentValues contentValues = posicionGPSMapeador.entityToContentValues();
-        long res = -1;
-        try
-        {
-            res = this.dao.update("PosicionesGPS", contentValues, "idCliente=? and strftime('%Y-%m-%d', PosicionesGPS.Fecha)=?", new String[]{idCliente, fecha});
-        }
-        catch (Exception ex)
-        {
-            Log.e("PosicionesGPS.act", ex.getLocalizedMessage());
-        }
-        return res;
-    }
+    //    public long actualizar(String idCliente, String fecha, PosicionesGPS posicionesGPS)
+    //    {
+    //        Mapeador<PosicionesGPS> posicionGPSMapeador = new Mapeador<PosicionesGPS>(posicionesGPS);
+    //        ContentValues contentValues = posicionGPSMapeador.entityToContentValues();
+    //        long res = -1;
+    //        try
+    //        {
+    //            res = this.dao.update("PosicionesGPS", contentValues, "idCliente=?", new String[]{idCliente});
+    ////            res = this.dao.update("PosicionesGPS", contentValues, "idCliente=? and strftime('%Y-%m-%d', PosicionesGPS.Fecha)=?", new String[]{idCliente, fecha});
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            Log.e("PosicionesGPS.act", ex.getLocalizedMessage());
+    //        }
+    //        return res;
+    //    }
 
     public long insertar(PosicionesGPS posicionesGPS)
     {

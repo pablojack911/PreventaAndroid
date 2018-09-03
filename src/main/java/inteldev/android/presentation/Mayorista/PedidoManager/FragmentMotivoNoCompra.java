@@ -96,16 +96,16 @@ public class FragmentMotivoNoCompra extends Fragment
                     posicionesGPS.motivoNoCompra = motivo;
                     posicionesGPS.idCliente = idClienteSeleccionado;
                     controladorPosicionesGPS.enviarPosicion(getContext(), posicionesGPS);
-                    motivo = controladorPosicionesGPS.obtenerMotivoNoCompra(idClienteSeleccionado, Fecha.obtenerFechaActual().toString());
+                    //                    motivo = controladorPosicionesGPS.obtenerMotivoNoCompra(idClienteSeleccionado, Fecha.obtenerFechaActual().toString());
 
-                    if (motivo == MotivoNoCompra.NO_HAY_DATOS_REGISTRADOS)
-                    {
-                        controladorPosicionesGPS.actualizar(idClienteSeleccionado, Fecha.obtenerFechaActual().toString(), posicionesGPS);
-                    }
-                    else
-                    {
-                        controladorPosicionesGPS.enviarPosicion(getContext(), posicionesGPS);
-                    }
+                    //                    if (motivo == MotivoNoCompra.NO_HAY_DATOS_REGISTRADOS)
+                    //                    {
+                    //                        controladorPosicionesGPS.actualizar(idClienteSeleccionado, Fecha.obtenerFechaActual().toString(), posicionesGPS);
+                    //                    }
+                    //                    else
+                    //                    {
+                    //                        controladorPosicionesGPS.enviarPosicion(getContext(), posicionesGPS);
+                    //                    }
                     getActivity().finish();
                 }
             }
