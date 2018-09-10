@@ -239,10 +239,7 @@ public class FragmentArticulos extends Fragment
                         switch (action)
                         {
                             case MANUAL:
-                                int cantidadBultos = value / articuloSeleccionado.unidadVenta;
-                                int cantidadFraccion = value % articuloSeleccionado.unidadVenta;
-                                edtBultos.setValue(cantidadBultos);
-                                edtFracciones.setValue(cantidadFraccion);
+                                contarBultosUnidades(value);
                                 break;
                             default:
                                 break;
@@ -256,6 +253,14 @@ public class FragmentArticulos extends Fragment
                 }
             }
         });
+    }
+
+    private void contarBultosUnidades(int value)
+    {
+        int cantidadBultos = value / articuloSeleccionado.unidadVenta;
+        int cantidadFraccion = value % articuloSeleccionado.unidadVenta;
+        edtBultos.setValue(cantidadBultos);
+        edtFracciones.setValue(cantidadFraccion);
     }
 
     private void configuraDescuento()
@@ -342,6 +347,11 @@ public class FragmentArticulos extends Fragment
                             }
                             detOper.unidadVenta = articuloSeleccionado.unidadVenta;
                             detOper.descuento = descuentoConvenio;
+                            if (edtFracciones.getValue() > articuloSeleccionado.unidadVenta)
+                            {
+                                contarBultosUnidades(edtFracciones.getValue());
+                            }
+                            calcularPrecioFinal();
                             detOper.entero = edtBultos.getValue();
                             detOper.fraccion = edtFracciones.getValue();
 
@@ -429,10 +439,10 @@ public class FragmentArticulos extends Fragment
 
     private void seleccionArticulo()
     {
-        //        edtBultos.setValue(0);
-        //        edtFracciones.setValue(0);
+        edtBultos.setValue(0);
+        edtFracciones.setValue(0);
         //        edtDescuento.setText("");
-        //        edtFinal.setText("");
+        edtFinal.setText("");
         descuentoConvenio = 0;
         tipoConvenio = "";
         detalleTipoConvenio = "";
